@@ -1,0 +1,103 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"button"> {
+  type?: "button" | "submit";
+  size?: "sm" | "md" | "lg";
+  filled?: boolean;
+  backgroundColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  href?: string;
+  onClick?: string;
+}
+
+const {
+  type = "button",
+  size = "md",
+  filled = false,
+  backgroundColor = "#007BFF",
+  textColor = "var(--light)",
+  borderColor = "var(--light)",
+  href,
+  onClick,
+  class: classes,
+  ...rest
+} = Astro.props;
+---
+
+<button 
+  class:list={[
+    classes, 
+    { filled },
+    "button-base"
+  ]}
+  data-size={size}
+  type={type}
+  {...rest}
+  style={`
+    background-color: ${backgroundColor};
+    color: ${textColor};
+    border-color: ${borderColor};
+  `}
+  data-href={href}
+  data-onclick={onClick}
+>
+  <slot />
+</button>
+
+<script>
+  document.querySelectorAll('.button-base').forEach(button => {
+    const href = button.getAttribute('data-href');
+    const onClickAttr = button.getAttribute('data-onclick');
+
+    button.addEventListener('click', (event) => {
+      if (onClickAttr) {
+        try {
+          new Function(onClickAttr).call(button);
+        } catch (error) {
+          console.error('Error in onClick handler:', error);
+        }
+      }
+
+      if (href && href !== '#') {
+        window.location.href = href;
+      }
+    });
+  });
+</script>
+
+<style>
+  .button-base {
+    font: inherit;
+    cursor: pointer;
+    display: flex;
+    gap: 0.2em;
+    align-items: center;
+    border: 0.2em solid;
+    padding: 0.4em 1.25em;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .button-base.filled {
+    border: none;
+  }
+
+  .button-base:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+
+  .button-base[data-size="sm"] {
+    font-size: 0.8rem;
+  }
+
+  .button-base[data-size="md"] {
+    font-size: 1.1rem;
+  }
+
+  .button-base[data-size="lg"] {
+    font-size: 2.5rem;
+  }
+</style>
