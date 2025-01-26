@@ -12,14 +12,14 @@ import Button from '../components/Button.astro'
 		<title>Math Arena</title>
 	</head>
 	<body>
-        <h1>Math Arena</h1>
+        <h1 id="title">Math Arena</h1>
 
         <div class="gameSelectButtons">
             <Button 
                 size="lg"
                 backgroundColor="#6089B3"
                 borderColor="transparent"
-                href="/add"
+                onClick="alert('Addition & Subtraction')"
             >
               Add/Sub
             </Button>
@@ -28,7 +28,7 @@ import Button from '../components/Button.astro'
                 size="lg"
                 backgroundColor="#6089B3"
                 borderColor="transparent"
-                onClick="alert('Hello World!')"
+                onClick="alert('Multiplication')"
             >
               Multiplication
             </Button>
@@ -37,7 +37,7 @@ import Button from '../components/Button.astro'
                 size="lg"
                 backgroundColor="#6089B3"
                 borderColor="transparent"
-                href="/add"
+                onClick="alert('Division')"
             >
               Division
             </Button>
