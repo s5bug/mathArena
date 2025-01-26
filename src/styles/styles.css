@@ -4,12 +4,14 @@ text-align: center;
 margin: 0;
 padding: 20px 0;
 font-size: 120px;
-
-position: absolute;
-top: 10px;
-left: 50%;
-transform: translateX(-50%);
 }
+
+#title {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
 .gameSelectButtons{
     display: flex;
