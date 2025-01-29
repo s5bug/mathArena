@@ -6,8 +6,10 @@ interface Props extends HTMLAttributes<"input"> {
   placeholder?: string;
   value?: string;
   classes?: string;
-  allowCommas?: boolean;
   size?: "sm" | "md" | "lg";
+  allowDecimals?: boolean;
+  minValue?: number;
+  maxValue?: number;
 }
 
 const {
@@ -15,23 +17,32 @@ const {
   placeholder = "Enter numbers",
   value = "",
   classes = "",
-  allowCommas = false,
   size = "md",
+  allowDecimals = false,
+  minValue,
+  maxValue,
   ...rest
 } = Astro.props;
+
+const stepSize = allowDecimals ? 0.01 : 1;
 ---
 
 <div class="input-container">
   {label && <label class="input-label" data-size={size}>{label}</label>}
-  <input
-    type="text"
-    class:list={[classes, "input-field"]}
-    placeholder={placeholder}
-    value={value}
-    data-allow-commas={allowCommas}
-    data-size={size}
-    {...rest}
-  />
+  <div class="input-wrapper">
+    <input
+      type="number"
+      required
+      class:list={[classes, "input-field"]}
+      placeholder={placeholder}
+      value={value}
+      step={stepSize}
+      min={minValue}
+      max={maxValue}
+      data-size={size}
+      {...rest}
+    />
+  </div>
 </div>
 
 <style>
@@ -55,6 +66,13 @@ const {
 
   .input-label[data-size="lg"] {
     font-size: 1.25rem;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .input-field {
@@ -91,50 +109,9 @@ const {
     box-shadow: 0 0 3px #3399ff;
   }
 
-  .input-field.error {
+  .input-field:invalid {
+    background-color: #ffcccc;
     border-color: #ff3333;
     box-shadow: 0 0 3px #ff3333;
   }
 </style>
-
-<script>
-  class NumberInput extends HTMLElement {
-    constructor() {
-      super();
-      this.setupInput();
-    }
-
-    setupInput() {
-      const input = this.querySelector('input');
-      if (!input) return;
-
-      const allowCommas = input.dataset.allowCommas === 'true';
-      const validationRegex = allowCommas ? /[^0-9,]/g : /[^0-9]/g;
-
-      input.addEventListener('input', (e) => {
-        const target = e.target as HTMLInputElement;
-        const originalValue = target.value;
-        const sanitizedValue = originalValue.replace(validationRegex, '');
-        
-        if (originalValue !== sanitizedValue) {
-          target.value = sanitizedValue;
-          input.classList.add('error');
-          setTimeout(() => {
-            input.classList.remove('error');
-          }, 1000);
-        }
-      });
-
-      if (allowCommas) {
-        input.addEventListener('blur', (e) => {
-          const target = e.target as HTMLInputElement;
-          target.value = target.value
-            .replace(/,+/g, ',')
-            .replace(/^,|,$/, '');
-        });
-      }
-    }
-  }
-
-  customElements.define('number-input', NumberInput);
-</script>
