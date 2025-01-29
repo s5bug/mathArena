@@ -1,0 +1,117 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"input"> {
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  classes?: string;
+  size?: "sm" | "md" | "lg";
+  allowDecimals?: boolean;
+  minValue?: number;
+  maxValue?: number;
+}
+
+const {
+  label = "",
+  placeholder = "Enter numbers",
+  value = "",
+  classes = "",
+  size = "md",
+  allowDecimals = false,
+  minValue,
+  maxValue,
+  ...rest
+} = Astro.props;
+
+const stepSize = allowDecimals ? 0.01 : 1;
+---
+
+<div class="input-container">
+  {label && <label class="input-label" data-size={size}>{label}</label>}
+  <div class="input-wrapper">
+    <input
+      type="number"
+      required
+      class:list={[classes, "input-field"]}
+      placeholder={placeholder}
+      value={value}
+      step={stepSize}
+      min={minValue}
+      max={maxValue}
+      data-size={size}
+      {...rest}
+    />
+  </div>
+</div>
+
+<style>
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-label {
+    font-weight: bold;
+  }
+
+  .input-label[data-size="sm"] {
+    font-size: 0.875rem;
+  }
+
+  .input-label[data-size="md"] {
+    font-size: 1rem;
+  }
+
+  .input-label[data-size="lg"] {
+    font-size: 1.25rem;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .input-field {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 100%;
+  }
+
+  .input-field[data-size="sm"] {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    width: 150px;
+    height: 30px;
+  }
+
+  .input-field[data-size="md"] {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    width: 200px;
+    height: 35px;
+  }
+
+  .input-field[data-size="lg"] {
+    padding: 0.75rem 1rem;
+    font-size: 1.25rem;
+    width: 250px;
+    height: 40px;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: #3399ff;
+    box-shadow: 0 0 3px #3399ff;
+  }
+
+  .input-field:invalid {
+    background-color: #ffcccc;
+    border-color: #ff3333;
+    box-shadow: 0 0 3px #ff3333;
+  }
+</style>
