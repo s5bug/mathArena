@@ -1,0 +1,171 @@
+---
+---
+
+
+<div class="side-menu">
+    <div class="menu-option email-box">[Display User Email]</div>
+    <div class="menu-option progress-button">Progress</div>
+    <div class="menu-option account-settings">Account Settings</div>
+    <div class="menu-option logout">Logout</div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const menuButton = document.querySelector(".menu-button");
+      const sideMenu = document.querySelector(".side-menu");
+  
+     
+      menuButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        sideMenu.classList.toggle("open");
+  
+   
+        if (sideMenu.classList.contains("open")) {
+          menuButton.classList.add("hidden");
+        }
+      });
+  
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".side-menu") && !event.target.closest(".menu-button")) {
+          sideMenu.classList.remove("open");
+          menuButton.classList.remove("hidden");
+        }
+      });
+  
+      
+      document.querySelector(".progress-button").addEventListener("click", () => {
+        alert("Go to progress page");
+      });
+
+      document.querySelector(".account-settings").addEventListener("click", () => {
+        alert("Go to user's account settings");
+      });
+
+      document.querySelector(".logout").addEventListener("click", () => {
+        alert("Log User Out");
+      });
+
+      
+    });
+</script>
+
+<style>
+
+    .menu-button {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: calc(100vw / 20);
+      height: calc(100vw / 20);
+      background-color: #2d87e0;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.3s ease;
+      border-radius: 50%; 
+    }
+  
+    .menu-button.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  
+    
+    .menu-button div {
+      width: 60%;
+      height: 4px;
+      background: white;
+      position: relative;
+    }
+  
+    .menu-button div::before,
+    .menu-button div::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: white;
+      left: 0;
+    }
+  
+    .menu-button div::before {
+      top: -10px;
+    }
+  
+    .menu-button div::after {
+      top: 10px;
+    }
+  
+ 
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: calc(100vw / 6);
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+      z-index: 99;
+    }
+  
+    .side-menu.open {
+      transform: translateX(0);
+    }
+  
+
+    .menu-option {
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.2s;
+    }
+  
+    .email-box {
+      background: #2e8bc9;
+      color: white;
+      cursor: default;
+    }
+  
+    .progress-button {
+      background: #1d99db;
+      color: white;
+    }
+  
+    .progress-button:hover {
+      background: #1d99db;
+    }
+  
+    .account-settings {
+      background: #1cb0ff;
+      color: white;
+    }
+  
+    .account-settings:hover {
+      background: #1cb0ff;
+    }
+  
+    .logout {
+      background: lightskyblue;
+      color: white;
+    }
+  
+    .logout:hover {
+      background: lightskyblue;
+    }
+  </style>
+  
+
+  <button class="menu-button">
+    <div></div>
+  </button>
