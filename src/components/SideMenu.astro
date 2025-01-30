@@ -2,7 +2,7 @@
 ---
 
 
-<div class="side-menu">
+<div id="side-menu">
     <div class="menu-option email-box">[Display User Email]</div>
     <div class="menu-option progress-button">Progress</div>
     <div class="menu-option account-settings">Account Settings</div>
@@ -11,8 +11,8 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const menuButton = document.querySelector(".menu-button");
-      const sideMenu = document.querySelector(".side-menu");
+      const menuButton = document.getElementById("menu-button")!;
+      const sideMenu = document.getElementById("side-menu")!;
   
      
       menuButton.addEventListener("click", (event) => {
@@ -26,21 +26,22 @@
       });
   
       document.addEventListener("click", (event) => {
-        if (!event.target.closest(".side-menu") && !event.target.closest(".menu-button")) {
+        let target: HTMLElement | null = event.target as (HTMLElement | null)
+        if (target && !target.closest(".side-menu") && !target.closest(".menu-button")) {
           sideMenu.classList.remove("open");
           menuButton.classList.remove("hidden");
         }
       });
   
-      document.querySelector(".progress-button").addEventListener("click", () => {
+      sideMenu.querySelector(".progress-button")!.addEventListener("click", () => {
         alert("Go to progress page");
       });
 
-      document.querySelector(".account-settings").addEventListener("click", () => {
+      sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
         alert("Go to user's account settings");
       });
 
-      document.querySelector(".logout").addEventListener("click", () => {
+      sideMenu.querySelector(".logout")!.addEventListener("click", () => {
         alert("Log User Out");
       });
 
@@ -50,7 +51,7 @@
 
 <style>
 
-    .menu-button {
+    #menu-button {
       position: fixed;
       top: 1rem;
       right: 1rem;
@@ -67,25 +68,25 @@
       border-radius: 50%; 
     }
 
-    .menu-button:hover {
+    #menu-button:hover {
       background: gray;
       transform: scale(1.1);
     }
 
-    .menu-button.hidden {
+    #menu-button.hidden {
       opacity: 0;
       pointer-events: none;
     }
   
-    .menu-button div {
+    #menu-button div {
       width: 60%;
       height: 4px;
       background: white;
       position: relative;
     }
   
-    .menu-button div::before,
-    .menu-button div::after {
+    #menu-button div::before,
+    #menu-button div::after {
       content: "";
       position: absolute;
       width: 100%;
@@ -94,15 +95,15 @@
       left: 0;
     }
   
-    .menu-button div::before {
+    #menu-button div::before {
       top: -10px;
     }
   
-    .menu-button div::after {
+    #menu-button div::after {
       top: 10px;
     }
   
-    .side-menu {
+    #side-menu {
       position: fixed;
       top: 0;
       right: 0;
@@ -119,7 +120,7 @@
       z-index: 99;
     }
   
-    .side-menu.open {
+    #side-menu.open {
       transform: translateX(0);
     }
   
@@ -169,6 +170,6 @@
   </style>
   
 
-  <button class="menu-button">
+  <button id="menu-button">
     <div></div>
   </button>
