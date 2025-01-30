@@ -1,6 +1,7 @@
 ---
 import '../styles/styles.css';
 import Button from '../components/Button.astro'
+import SideMenu from '../components/SideMenu.astro'
 ---
 
 <html lang="en">
@@ -12,21 +13,24 @@ import Button from '../components/Button.astro'
 		<title>Math Arena</title>
 	</head>
 	<body>
-        <h1 id="title">Math Arena</h1>
 
+        <h1 id="title">Math Arena</h1>
+        <SideMenu></SideMenu>
         <div class="gameSelectButtons">
             <Button 
                 size="lg"
-                backgroundColor="#6089B3"
+                backgroundColor="#4ea7f5"
+                textColor=white
                 borderColor="transparent"
-                onClick="alert('Addition & Subtraction')"
+                href="/add"
             >
               Add/Sub
             </Button>
 
             <Button 
                 size="lg"
-                backgroundColor="#6089B3"
+                backgroundColor="#4ea7f5"
+                textColor=white
                 borderColor="transparent"
                 onClick="alert('Multiplication')"
             >
@@ -35,7 +39,8 @@ import Button from '../components/Button.astro'
             
             <Button 
                 size="lg"
-                backgroundColor="#6089B3"
+                backgroundColor="#4ea7f5"
+                textColor=white
                 borderColor="transparent"
                 onClick="alert('Division')"
             >

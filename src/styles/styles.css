@@ -21,3 +21,13 @@ font-size: 120px;
     height: 100vh;
     gap: 20px;
 }
+body {
+  background-image: url('/mathArenaBkg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 95%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
