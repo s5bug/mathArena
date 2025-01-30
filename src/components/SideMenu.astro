@@ -32,7 +32,6 @@
         }
       });
   
-      
       document.querySelector(".progress-button").addEventListener("click", () => {
         alert("Go to progress page");
       });
@@ -67,17 +66,17 @@
       transition: opacity 0.3s ease;
       border-radius: 50%; 
     }
+
     .menu-button:hover {
       background: gray;
       transform: scale(1.1);
-
     }
+
     .menu-button.hidden {
       opacity: 0;
       pointer-events: none;
     }
   
-    
     .menu-button div {
       width: 60%;
       height: 4px;
@@ -103,7 +102,6 @@
       top: 10px;
     }
   
- 
     .side-menu {
       position: fixed;
       top: 0;
@@ -147,7 +145,7 @@
     }
   
     .progress-button:hover {
-      background: gray;
+      background: #1d99db;
     }
   
     .account-settings {
@@ -156,7 +154,8 @@
     }
   
     .account-settings:hover {
-      background: gray;
+      background: #1cb0ff;
+      border: 2px solid gray;
     }
   
     .logout {
@@ -165,7 +164,7 @@
     }
   
     .logout:hover {
-      background: gray;
+      background: lightskyblue;
     }
   </style>
   
