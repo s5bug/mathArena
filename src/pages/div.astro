@@ -8,15 +8,28 @@ import '../styles/styles.css';
   <h1 id="title">Division</h1>
 
   <div class="input-row">
-    <span class="input-label"># of digits</span>
+    <span class="input-label"># of digits (1st)</span>
     <number-input>
       <NumberInput 
-        id="digitsInput"
-        placeholder="Enter numbers only"
+        id="digitsInput1"
+        placeholder="Enter digits only"
         size="lg"
         allowDecimals={false}
         minValue={1}
-        maxValue={4}
+        maxValue={6}
+      />
+    </number-input>
+  </div>
+
+  <div class="input-row">
+    <span class="input-label"># of digits (2nd)</span>
+    <number-input>
+      <NumberInput 
+        id="digitsInput2"
+        placeholder="Enter digits only"
+        size="lg"
+        minValue={1}
+        maxValue={6}
       />
     </number-input>
   </div>
@@ -26,7 +39,7 @@ import '../styles/styles.css';
     <number-input>
       <NumberInput 
         id="speedInput"
-        placeholder="Enter numbers only"
+        placeholder="Enter digits only"
         size="lg"
         minValue={0.02}
         maxValue={3}
@@ -58,30 +71,30 @@ import '../styles/styles.css';
 </Button>
 
 <script>
-  const digitsInput = document.querySelector('#digitsInput') as HTMLInputElement;
-  const numbersInput = document.querySelector('#numbersInput') as HTMLInputElement;
+  const digitsInput1 = document.querySelector('#digitsInput1') as HTMLInputElement;
+  const digitsInput2 = document.querySelector('#digitsInput2') as HTMLInputElement;
   const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
   const nextButton = document.querySelector('#nextButton');
 
   nextButton?.addEventListener('click', () => {
-    const digits = digitsInput?.value || '';
-    const numbers = numbersInput?.value || '';
+    const digits1 = digitsInput1?.value || '';
+    const digits2 = digitsInput2?.value || '';
     const speed = speedInput?.value || '';
 
-    if (!digits || !numbers || !speed) {
+    if (!digits1 || !digits2 || !speed) {
       alert('Please fill in all fields');
       return;
     }
 
     console.log({
-      digits,
-      numbers,
+      digits1,
+      digits2,
       speed
     });
 
     const gameConfig = {
-      digits: Number(digits),
-      numbers: Number(numbers),
+      digits1: Number(digits1),
+      digits2: Number(digits2),
       speed: Number(speed)
     };
 
