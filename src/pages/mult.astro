@@ -1,0 +1,90 @@
+---
+import NumberInput from '../components/NumberInput.astro';
+import Button from '../components/Button.astro';
+import '../styles/styles.css';
+---
+
+<div class="form-container">
+  <h1 id="title">Multiplcation</h1>
+
+  <div class="input-row">
+    <span class="input-label"># of digits</span>
+    <number-input>
+      <NumberInput 
+        id="digitsInput"
+        placeholder="Enter numbers only"
+        size="lg"
+        allowDecimals={false}
+        minValue={1}
+        maxValue={4}
+      />
+    </number-input>
+  </div>
+
+  <div class="input-row">
+    <span class="input-label">Speed (S)</span>
+    <number-input>
+      <NumberInput 
+        id="speedInput"
+        placeholder="Enter numbers only"
+        size="lg"
+        minValue={0.02}
+        maxValue={3}
+        allowDecimals={true}
+      />
+    </number-input>
+  </div>
+</div>
+
+<Button 
+  id="backButton"
+  size="lg"
+  backgroundColor="#4ea7f5"
+  textColor=white
+  borderColor="transparent"
+  href="/"
+>
+  Back
+</Button>
+
+<Button 
+  id="nextButton"
+  size="lg"
+  backgroundColor="#4ea7f5"
+  textColor=white
+  borderColor="transparent"
+>
+  Next
+</Button>
+
+<script>
+  const digitsInput = document.querySelector('#digitsInput') as HTMLInputElement;
+  const numbersInput = document.querySelector('#numbersInput') as HTMLInputElement;
+  const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
+  const nextButton = document.querySelector('#nextButton');
+
+  nextButton?.addEventListener('click', () => {
+    const digits = digitsInput?.value || '';
+    const numbers = numbersInput?.value || '';
+    const speed = speedInput?.value || '';
+
+    if (!digits || !numbers || !speed) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    console.log({
+      digits,
+      numbers,
+      speed
+    });
+
+    const gameConfig = {
+      digits: Number(digits),
+      numbers: Number(numbers),
+      speed: Number(speed)
+    };
+
+    console.log('Starting game with config:', gameConfig);
+  });
+</script>
