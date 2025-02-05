@@ -19,6 +19,10 @@ export class ProblemGenerator {
     }
   
     addSubtract(numbers: number, digits: number): number[] {
+        if (numbers <= 0 || digits <= 0) {
+            throw new Error("Numbers and digits must be greater than zero.");
+        }
+        
         let result: number[] = [];
         let runningSum = 0;
     
