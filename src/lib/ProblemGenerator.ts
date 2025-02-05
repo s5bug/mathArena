@@ -1,3 +1,13 @@
+export class ProblemSet {
+  entries: number[];
+  result: number;
+  
+  constructor(entries: number[], result: number) {
+    this.entries = entries;
+    this.result = result;
+  }
+}
+
 export class ProblemGenerator {
     constructor() {}
   
@@ -18,7 +28,7 @@ export class ProblemGenerator {
         return num;
     }
   
-    addSubtract(numbers: number, digits: number): number[] {
+    addSubtract(numbers: number, digits: number): ProblemSet {
         if (numbers <= 0 || digits <= 0) {
             throw new Error("Numbers and digits must be greater than zero.");
         }
@@ -33,11 +43,11 @@ export class ProblemGenerator {
             runningSum += num;
             result.push(num);
         }
-    
-        return result;
+        
+        return new ProblemSet(result, runningSum);
     }
   
-    multiply(digits1: number, digits2: number): number[] {
+    multiply(digits1: number, digits2: number): ProblemSet {
       if (digits1 <= 0 || digits2 <= 0) {
         throw new Error("Digit values must be greater than zero.");
       }
@@ -45,10 +55,10 @@ export class ProblemGenerator {
       const num1 = this.generateNumber(digits1, false);
       const num2 = this.generateNumber(digits2, false);
   
-      return [num1, num2];
+      return new ProblemSet([num1, num2], num1 * num2);
     }
   
-    divide(digits1: number, digits2: number): number[] {
+    divide(digits1: number, digits2: number): ProblemSet {
       if (digits1 <= 0 || digits2 <= 0) {
         throw new Error("Digit values must be greater than zero.");
       }
@@ -58,7 +68,7 @@ export class ProblemGenerator {
   
       let dividend = divisor * this.generateNumber(digits1, false);
   
-      return [dividend, divisor];
+      return new ProblemSet([dividend, divisor], dividend / divisor);
     }
   }
   
