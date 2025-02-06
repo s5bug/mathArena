@@ -71,6 +71,7 @@ import '../styles/styles.css';
 </Button>
 
 <script>
+  import { ProblemGenerator } from '../lib/ProblemGenerator';
   const digitsInput = document.querySelector('#digitsInput') as HTMLInputElement;
   const numbersInput = document.querySelector('#numbersInput') as HTMLInputElement;
   const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
@@ -86,12 +87,6 @@ import '../styles/styles.css';
       return;
     }
 
-    console.log({
-      digits,
-      numbers,
-      speed
-    });
-
     const gameConfig = {
       digits: Number(digits),
       numbers: Number(numbers),
@@ -99,5 +94,8 @@ import '../styles/styles.css';
     };
 
     console.log('Starting game with config:', gameConfig);
+    const problemGen = new ProblemGenerator();
+    const problems = problemGen.addSubtract(gameConfig.numbers, gameConfig.digits);
+    console.log('The problem is:', problems)
   });
 </script>
