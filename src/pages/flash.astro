@@ -22,7 +22,7 @@ import Button from '../components/Button.astro';
   
       .flash-container {
         text-align: center;
-        font-size: 3rem; /* Adjust font size as needed */
+        font-size: 3rem;
       }
   
       .currently-flashing {
@@ -33,22 +33,29 @@ import Button from '../components/Button.astro';
       }
   
       .flash-number {
-        font-size: 5rem; /* Increase font size for the flashing number */
+        font-size: 10rem;
         margin-bottom: 20px;
       }
   
       .result-input {
-        font-size: 1.2rem; /* Adjust input font size */
+        font-size: 4.5rem;
         padding: 0.5rem;
-        width: 200px;
-        margin-top: 30px; /* Increase margin-top for spacing */
-        margin-bottom: 20px; /* Maintain margin-bottom for stability */
+        width: 350px;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        display: none; /* Initially hide the input */
       }
   
       #backButton {
         position: fixed;
         bottom: 20px;
         left: 20px;
+        display: none; /* Initially hide the back button */
+      }
+
+      #submitButton {
+        display: none; /* Initially hide the submit button */
+        margin: 20px auto; /* Center the button */
       }
     </style>
   </head>
@@ -56,7 +63,7 @@ import Button from '../components/Button.astro';
   <body>
     <div class="flash-container">
       <div id="currentlyFlashing" class="currently-flashing">
-        Currently Flashing
+        <!--Currently Flashing_-->
       </div>
       <div id="flashContainer" class="flash-number">
         <!-- Initial loading text -->
@@ -65,6 +72,17 @@ import Button from '../components/Button.astro';
   
       <!-- Input area for final result -->
       <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+
+      <!-- Submit button -->
+      <Button
+        id="submitButton"
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+      >
+        Submit Answer
+      </Button>
   
       <!-- Back button styled using Button.astro component -->
       <Button
@@ -75,7 +93,7 @@ import Button from '../components/Button.astro';
         borderColor="transparent"
         href="/"
       >
-        Back to Input
+        Back
       </Button>
     </div>
   
@@ -95,7 +113,10 @@ import Button from '../components/Button.astro';
       function flashNumbers(numbersArr: number[], speedSeconds: number, finalResult: number) {
         const currentlyFlashing = document.getElementById('currentlyFlashing') as HTMLDivElement;
         const flashContainer = document.getElementById('flashContainer') as HTMLDivElement;
-        if (!currentlyFlashing || !flashContainer) return;
+        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
+        const backButton = document.getElementById('backButton') as HTMLButtonElement;
+        const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+        if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton) return;
   
         let index = 0;
         const showTime = speedSeconds * 1000;
@@ -105,8 +126,11 @@ import Button from '../components/Button.astro';
             flashContainer.textContent = ''; // Clear flashContainer
             currentlyFlashing.style.visibility = 'hidden'; // Hide "Currently Flashing"
             setTimeout(() => {
-              flashContainer.textContent = 'Done'; // Display "Done" message
-            }, 1000); // 1 second delay before showing "Done"
+              flashContainer.textContent = 'Answer'; // Display "Answer" message
+              resultInput.style.display = 'inline-block'; // Show the input field
+              backButton.style.display = 'block'; // Show the back button
+              submitButton.style.display = 'block'; // Show the submit button
+            }, 1000); // 1 second delay before showing "Answer"
             return;
           }
   
@@ -133,10 +157,10 @@ import Button from '../components/Button.astro';
         });
       }
   
-      // Function to handle input submission
-      const resultInput = document.getElementById('resultInput') as HTMLInputElement;
-      if (resultInput) {
-        resultInput.addEventListener('change', () => {
+      // Function to check the answer
+      function checkAnswer() {
+        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
+        if (resultInput) {
           const userInput = resultInput.value.trim();
           if (userInput === result.toString()) {
             // Handle correct input behavior
@@ -144,6 +168,22 @@ import Button from '../components/Button.astro';
           } else {
             // Handle incorrect input behavior
             alert('Incorrect input!'); // Replace with your logic
+          }
+        }
+      }
+  
+      // Function to handle submit button click
+      const submitButton = document.getElementById('submitButton');
+      if (submitButton) {
+        submitButton.addEventListener('click', checkAnswer);
+      }
+
+      // Add enter key support for submission
+      const resultInput = document.getElementById('resultInput');
+      if (resultInput) {
+        resultInput.addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            checkAnswer();
           }
         });
       }
