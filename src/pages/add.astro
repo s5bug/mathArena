@@ -13,10 +13,10 @@ import '../styles/styles.css';
     <h1 id="title">Add/Sub</h1>
 
     <div class="input-row">
-      <span class="input-label"># of digits (1-6)</span>
+      <span class="input-label"># of digits</span>
       <NumberInput
         id="digitsInput"
-        placeholder="Enter digits"
+        placeholder="Enter numbers from 1-6"
         size="lg"
         minValue={1}
         maxValue={6}
@@ -25,21 +25,21 @@ import '../styles/styles.css';
     </div>
 
     <div class="input-row">
-      <span class="input-label"># of numbers (1-6)</span>
+      <span class="input-label"># of numbers</span>
       <NumberInput
         id="numbersInput"
-        placeholder="Enter number of terms"
+        placeholder="Enter numbers from 1-15"
         size="lg"
         minValue={1}
-        maxValue={6}
+        maxValue={15}
       />
     </div>
 
     <div class="input-row">
-      <span class="input-label">Speed (0.02-3)</span>
+      <span class="input-label">Speed (s)</span>
       <NumberInput
         id="speedInput"
-        placeholder="Enter speed"
+        placeholder="Enter numbers from 0.2-3"
         size="lg"
         minValue={0.02}
         maxValue={3}
