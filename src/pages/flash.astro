@@ -1,0 +1,191 @@
+---
+import '../styles/styles.css';
+import Button from '../components/Button.astro';
+---
+
+<head>
+    <title>Flashing Numbers</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('/mathArenaBkg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 95%;
+      }
+  
+      .flash-container {
+        text-align: center;
+        font-size: 3rem;
+      }
+  
+      .currently-flashing {
+        color: green;
+        font-weight: bold;
+        margin-bottom: 10px;
+        visibility: hidden; /* Initially hidden */
+      }
+  
+      .flash-number {
+        font-size: 10rem;
+        margin-bottom: 20px;
+      }
+  
+      .result-input {
+        font-size: 4.5rem;
+        padding: 0.5rem;
+        width: 350px;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        display: none; /* Initially hide the input */
+      }
+  
+      #backButton {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        display: none; /* Initially hide the back button */
+      }
+
+      #submitButton {
+        display: none; /* Initially hide the submit button */
+        margin: 20px auto; /* Center the button */
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div class="flash-container">
+      <div id="currentlyFlashing" class="currently-flashing">
+        <!--Currently Flashing_-->
+      </div>
+      <div id="flashContainer" class="flash-number">
+        <!-- Initial loading text -->
+        Loading...
+      </div>
+  
+      <!-- Input area for final result -->
+      <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+
+      <!-- Submit button -->
+      <Button
+        id="submitButton"
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+      >
+        Submit Answer
+      </Button>
+  
+      <!-- Back button styled using Button.astro component -->
+      <Button
+        id="backButton"
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+        href="/"
+      >
+        Back
+      </Button>
+    </div>
+  
+    <script>
+      import { ProblemGenerator } from '../lib/ProblemGenerator';
+      import '../components/Button.astro';
+  
+      const params = new URLSearchParams(window.location.search);
+      const digits = parseInt(params.get('digits') || '0');
+      const numbers = parseInt(params.get('numbers') || '0');
+      const speed = parseFloat(params.get('speed') || '0');
+  
+      // Instantiate ProblemGenerator
+      const problemGen = new ProblemGenerator();
+      const { entries, result } = problemGen.addSubtract(numbers, digits);
+  
+      function flashNumbers(numbersArr: number[], speedSeconds: number, finalResult: number) {
+        const currentlyFlashing = document.getElementById('currentlyFlashing') as HTMLDivElement;
+        const flashContainer = document.getElementById('flashContainer') as HTMLDivElement;
+        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
+        const backButton = document.getElementById('backButton') as HTMLButtonElement;
+        const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+        if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton) return;
+  
+        let index = 0;
+        const showTime = speedSeconds * 1000;
+  
+        function showNextNumber() {
+          if (index >= numbersArr.length) {
+            flashContainer.textContent = ''; // Clear flashContainer
+            currentlyFlashing.style.visibility = 'hidden'; // Hide "Currently Flashing"
+            setTimeout(() => {
+              flashContainer.textContent = 'Answer'; // Display "Answer" message
+              resultInput.style.display = 'inline-block'; // Show the input field
+              backButton.style.display = 'block'; // Show the back button
+              submitButton.style.display = 'block'; // Show the submit button
+            }, 1000); // 1 second delay before showing "Answer"
+            return;
+          }
+  
+          currentlyFlashing.style.visibility = 'visible'; // Ensure "Currently Flashing" is visible
+          flashContainer.textContent = numbersArr[index].toString();
+          index++;
+  
+          setTimeout(() => {
+            flashContainer.textContent = '';
+            setTimeout(showNextNumber, showTime);
+          }, showTime);
+        }
+  
+        showNextNumber();
+      }
+  
+      flashNumbers(entries, speed, result);
+  
+      // Function to handle back button click
+      const backButton = document.getElementById('backButton');
+      if (backButton) {
+        backButton.addEventListener('click', () => {
+          window.history.back(); // Go back to the previous page
+        });
+      }
+  
+      // Function to check the answer
+      function checkAnswer() {
+        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
+        if (resultInput) {
+          const userInput = resultInput.value.trim();
+          if (userInput === result.toString()) {
+            // Handle correct input behavior
+            alert('Correct input!'); // Replace with your logic
+          } else {
+            // Handle incorrect input behavior
+            alert('Incorrect input!'); // Replace with your logic
+          }
+        }
+      }
+  
+      // Function to handle submit button click
+      const submitButton = document.getElementById('submitButton');
+      if (submitButton) {
+        submitButton.addEventListener('click', checkAnswer);
+      }
+
+      // Add enter key support for submission
+      const resultInput = document.getElementById('resultInput');
+      if (resultInput) {
+        resultInput.addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            checkAnswer();
+          }
+        });
+      }
+    </script>
+  </body>
