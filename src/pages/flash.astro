@@ -1,6 +1,7 @@
 ---
 import '../styles/styles.css';
 import Button from '../components/Button.astro';
+
 ---
 
 <head>
@@ -29,7 +30,7 @@ import Button from '../components/Button.astro';
         color: green;
         font-weight: bold;
         margin-bottom: 10px;
-        visibility: hidden; /* Initially hidden */
+        visibility: hidden;
       }
   
       .flash-number {
@@ -43,142 +44,180 @@ import Button from '../components/Button.astro';
         width: 350px;
         margin-top: 30px;
         margin-bottom: 20px;
-        display: none; /* Initially hide the input */
+        display: none;
       }
   
       #backButton {
         position: fixed;
         bottom: 20px;
         left: 20px;
-        display: none; /* Initially hide the back button */
+        display: none;
       }
 
       #submitButton {
-        display: none; /* Initially hide the submit button */
-        margin: 20px auto; /* Center the button */
+        display: none;
+        margin: 20px auto;
+      }
+
+      #score-box {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 10vw;
+        height: 40px;
+        background: white;
+        padding: 5px;
+        border: 2px solid black;
+        font-size: 1.2rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+
+      #resultMessage {
+        font-size: 2rem;
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        display: none;
+      }
+
+      .correct {
+        background-color: lightgreen;
+        color: green;
+      }
+
+      .incorrect {
+        background-color: lightcoral;
+        color: darkred;
       }
     </style>
-  </head>
-  
-  <body>
-    <div class="flash-container">
-      <div id="currentlyFlashing" class="currently-flashing">
-        <!--Currently Flashing_-->
-      </div>
-      <div id="flashContainer" class="flash-number">
-        <!-- Initial loading text -->
-        Loading...
-      </div>
-  
-      <!-- Input area for final result -->
-      <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+</head>
 
-      <!-- Submit button -->
-      <Button
-        id="submitButton"
-        size="lg"
-        backgroundColor="#4ea7f5"
-        textColor="white"
-        borderColor="transparent"
-      >
-        Submit Answer
-      </Button>
+<body>
+  <div id="score-box">Score: 0</div>
+  <div class="flash-container">
+    <div id="currentlyFlashing" class="currently-flashing"></div>
+    <div id="flashContainer" class="flash-number"></div>
+
+    <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+
+    <Button id="submitButton" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
+      Submit Answer
+    </Button>
+
+    <Button id="backButton" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent" href="/">
+      Back
+    </Button>
+
+    <div id="resultMessage"></div>
+  </div>
   
-      <!-- Back button styled using Button.astro component -->
-      <Button
-        id="backButton"
-        size="lg"
-        backgroundColor="#4ea7f5"
-        textColor="white"
-        borderColor="transparent"
-        href="/"
-      >
-        Back
-      </Button>
-    </div>
-  
-    <script>
-      import { ProblemGenerator } from '../lib/ProblemGenerator';
-      import '../components/Button.astro';
-  
+  <script>
+    import { ProblemGenerator } from '../lib/ProblemGenerator';
+    import { updateScore, getScore } from "../lib/score.ts";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const scoreBox = document.getElementById("score-box");
+      if (scoreBox) {
+        scoreBox.textContent = `Score: ${getScore()}`;
+      }
+
       const params = new URLSearchParams(window.location.search);
       const digits = parseInt(params.get('digits') || '0');
       const numbers = parseInt(params.get('numbers') || '0');
       const speed = parseFloat(params.get('speed') || '0');
-  
-      // Instantiate ProblemGenerator
+
       const problemGen = new ProblemGenerator();
       const { entries, result } = problemGen.addSubtract(numbers, digits);
-  
-      function flashNumbers(numbersArr: number[], speedSeconds: number, finalResult: number) {
-        const currentlyFlashing = document.getElementById('currentlyFlashing') as HTMLDivElement;
-        const flashContainer = document.getElementById('flashContainer') as HTMLDivElement;
-        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
-        const backButton = document.getElementById('backButton') as HTMLButtonElement;
-        const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+
+      function flashNumbers(numbersArr, speedSeconds) {
+        const currentlyFlashing = document.getElementById('currentlyFlashing');
+        const flashContainer = document.getElementById('flashContainer');
+        const resultInput = document.getElementById('resultInput');
+        const backButton = document.getElementById('backButton');
+        const submitButton = document.getElementById('submitButton');
+
         if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton) return;
-  
+
         let index = 0;
         const showTime = speedSeconds * 1000;
-  
+
         function showNextNumber() {
           if (index >= numbersArr.length) {
-            flashContainer.textContent = ''; // Clear flashContainer
-            currentlyFlashing.style.visibility = 'hidden'; // Hide "Currently Flashing"
+            flashContainer.textContent = ''; 
+            currentlyFlashing.style.visibility = 'hidden'; 
             setTimeout(() => {
-              flashContainer.textContent = 'Answer'; // Display "Answer" message
-              resultInput.style.display = 'inline-block'; // Show the input field
-              backButton.style.display = 'block'; // Show the back button
-              submitButton.style.display = 'block'; // Show the submit button
-            }, 1000); // 1 second delay before showing "Answer"
+              flashContainer.textContent = 'Answer'; 
+              resultInput.style.display = 'inline-block'; 
+              backButton.style.display = 'block'; 
+              submitButton.style.display = 'block'; 
+            }, 1000); 
             return;
           }
-  
-          currentlyFlashing.style.visibility = 'visible'; // Ensure "Currently Flashing" is visible
+
+          currentlyFlashing.style.visibility = 'visible'; 
           flashContainer.textContent = numbersArr[index].toString();
           index++;
-  
+
           setTimeout(() => {
             flashContainer.textContent = '';
             setTimeout(showNextNumber, showTime);
           }, showTime);
         }
-  
+
         showNextNumber();
       }
-  
-      flashNumbers(entries, speed, result);
-  
-      // Function to handle back button click
+
+      flashNumbers(entries, speed);
       const backButton = document.getElementById('backButton');
       if (backButton) {
         backButton.addEventListener('click', () => {
           window.history.back(); // Go back to the previous page
         });
       }
-  
-      // Function to check the answer
+      
       function checkAnswer() {
-        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
-        if (resultInput) {
+        const resultInput = document.getElementById("resultInput");
+        const submitButton = document.getElementById("submitButton");
+        const resultMessage = document.getElementById("resultMessage");
+
+        if (resultInput && submitButton && resultMessage) {
           const userInput = resultInput.value.trim();
+          const currentScore = getScore(); 
+
+          // disallow inputting for numbers after correct
+          resultInput.disabled = true;
+          submitButton.disabled = true;
+
           if (userInput === result.toString()) {
-            // Handle correct input behavior
-            alert('Correct input!'); // Replace with your logic
+            // Cif the answer is right
+            updateScore(1);
+            resultMessage.textContent = "Correct!";
+            resultMessage.className = "correct";
           } else {
-            // Handle incorrect input behavior
-            alert('Incorrect input!'); // Replace with your logic
+            // if the answer is wrong
+            if (currentScore > 0) {
+              updateScore(-1);
+            }
+            resultMessage.textContent = `Incorrect, the correct answer is: ${result}`;
+            resultMessage.className = "incorrect";
           }
+
+          // Show the result message
+          resultMessage.style.display = "block";
         }
       }
-  
-      // Function to handle submit button click
+
       const submitButton = document.getElementById('submitButton');
       if (submitButton) {
         submitButton.addEventListener('click', checkAnswer);
       }
 
-      // Add enter key support for submission
       const resultInput = document.getElementById('resultInput');
       if (resultInput) {
         resultInput.addEventListener('keypress', (event) => {
@@ -187,5 +226,6 @@ import Button from '../components/Button.astro';
           }
         });
       }
-    </script>
-  </body>
+    });
+  </script>
+</body>
