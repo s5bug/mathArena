@@ -134,7 +134,7 @@ import Button from '../components/Button.astro';
       const problemGen = new ProblemGenerator();
       const { entries, result } = problemGen.addSubtract(numbers, digits);
 
-      function flashNumbers(numbersArr, speedSeconds) {
+      function flashNumbers(numbersArr: number[], speedSeconds: number) {
         const currentlyFlashing = document.getElementById('currentlyFlashing');
         const flashContainer = document.getElementById('flashContainer');
         const resultInput = document.getElementById('resultInput');
@@ -148,7 +148,10 @@ import Button from '../components/Button.astro';
 
         function showNextNumber() {
           if (index >= numbersArr.length) {
-            flashContainer.textContent = ''; 
+            
+            if (flashContainer) {
+              flashContainer.textContent = ''; 
+            }
             if (currentlyFlashing) {
             currentlyFlashing.style.visibility = 'hidden'; 
             }
@@ -172,7 +175,9 @@ import Button from '../components/Button.astro';
           if (currentlyFlashing) {
             currentlyFlashing.style.visibility = 'visible';
           }
-          flashContainer.textContent = numbersArr[index].toString();
+          if (flashContainer) {
+            flashContainer.textContent = numbersArr[index].toString();
+          }
           index++;
 
           setTimeout(() => {
