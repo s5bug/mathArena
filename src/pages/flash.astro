@@ -1,7 +1,6 @@
 ---
 import '../styles/styles.css';
 import Button from '../components/Button.astro';
-
 ---
 
 <head>
@@ -150,22 +149,36 @@ import Button from '../components/Button.astro';
         function showNextNumber() {
           if (index >= numbersArr.length) {
             flashContainer.textContent = ''; 
+            if (currentlyFlashing) {
             currentlyFlashing.style.visibility = 'hidden'; 
+            }
             setTimeout(() => {
-              flashContainer.textContent = 'Answer'; 
-              resultInput.style.display = 'inline-block'; 
-              backButton.style.display = 'block'; 
-              submitButton.style.display = 'block'; 
+              if (flashContainer) {
+               flashContainer.textContent = 'Answer'; 
+              }
+              if (resultInput){
+                resultInput.style.display = 'inline-block'; 
+              }
+              if (backButton) {
+                backButton.style.display = 'block'; 
+              }
+              if (submitButton) {
+                submitButton.style.display = 'block';
+              }
             }, 1000); 
             return;
           }
 
-          currentlyFlashing.style.visibility = 'visible'; 
+          if (currentlyFlashing) {
+            currentlyFlashing.style.visibility = 'visible';
+          }
           flashContainer.textContent = numbersArr[index].toString();
           index++;
 
           setTimeout(() => {
-            flashContainer.textContent = '';
+            if (flashContainer) {
+                flashContainer.textContent = '';
+            }
             setTimeout(showNextNumber, showTime);
           }, showTime);
         }
@@ -174,20 +187,22 @@ import Button from '../components/Button.astro';
       }
 
       flashNumbers(entries, speed);
+
       const backButton = document.getElementById('backButton');
       if (backButton) {
         backButton.addEventListener('click', () => {
           window.history.back(); // Go back to the previous page
         });
       }
-      
+
       function checkAnswer() {
-        const resultInput = document.getElementById("resultInput");
-        const submitButton = document.getElementById("submitButton");
+
+        const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
         const resultMessage = document.getElementById("resultMessage");
 
         if (resultInput && submitButton && resultMessage) {
-          const userInput = resultInput.value.trim();
+          const userInput = (resultInput as HTMLInputElement).value.trim();
           const currentScore = getScore(); 
 
           // disallow inputting for numbers after correct
