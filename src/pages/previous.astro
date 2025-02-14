@@ -46,11 +46,9 @@ import Button from '../components/Button.astro';
     const toggleResultButton = document.getElementById('toggleResultButton');
 
     if (problemEntriesDiv && correctResultDiv) {
-      problemEntriesDiv.innerHTML = `${problemEntries.join('<br>')}<strong><br>━</strong>`;
+      problemEntriesDiv.innerHTML = `${problemEntries.map((entry: any) => `(${entry})`).join(' + ')}`;
       correctResultDiv.style.display = 'none';
-      correctResultDiv.innerHTML = `${correctResult}`;
-      problemEntriesDiv.style.textAlign = 'center'; //doesn't perfectly center without this even with css styling 
-      correctResultDiv.style.textAlign = 'center';
+      correctResultDiv.innerHTML = `<strong>= </strong>${correctResult}`;
     }
 
     if (toggleResultButton) {
