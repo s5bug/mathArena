@@ -39,16 +39,25 @@ import Button from '../components/Button.astro';
     const problemEntries = JSON.parse(localStorage.getItem('previousEntries') || "This Shouldn't Be Possible");
     const correctResult = localStorage.getItem('previousResult');
     const previousURL = localStorage.getItem('previousURL');
+    const arithmeticType = localStorage.getItem('arithmeticType');
 
     const problemEntriesDiv = document.getElementById('problemEntries');
     const correctResultDiv = document.getElementById('correctResult');
     const backButton = document.getElementById('backButton');
     const toggleResultButton = document.getElementById('toggleResultButton');
 
-    if (problemEntriesDiv && correctResultDiv) {
+    if (problemEntriesDiv && correctResultDiv && (arithmeticType == '0')) {
       problemEntriesDiv.innerHTML = `${problemEntries.map((entry: any) => `(${entry})`).join(' + ')}`;
       correctResultDiv.style.display = 'none';
       correctResultDiv.innerHTML = `<strong>= </strong>${correctResult}`;
+    } else if (problemEntriesDiv && correctResultDiv && (arithmeticType == '1')) {
+      problemEntriesDiv.innerHTML = `${problemEntries.map((entry: any) => `(${entry})`).join(' x ')}`;
+      correctResultDiv.style.display = 'none';
+      correctResultDiv.innerHTML = `<strong>= </strong>${correctResult}`;
+    } else if (problemEntriesDiv && correctResultDiv && (arithmeticType == '2')) {
+      problemEntriesDiv.innerHTML = `${problemEntries.map((entry: any) => `(${entry})`).join(' ÷ ')}`;
+      correctResultDiv.style.display = 'none';
+      correctResultDiv.innerHTML = `<strong>= </strong>${correctResult}`;    
     }
 
     if (toggleResultButton) {

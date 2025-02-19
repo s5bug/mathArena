@@ -157,7 +157,7 @@ import Accuracy from '../components/Accuracy.astro';
   </div>
   
   <script>
-    import { ProblemGenerator } from '../lib/ProblemGenerator';
+    import { ProblemGenerator, ProblemSet } from '../lib/ProblemGenerator';
     import { updateScore, getScore } from "../lib/score.ts";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -176,12 +176,24 @@ import Accuracy from '../components/Accuracy.astro';
       const accuracyBox = document.getElementById("accuracy-box");
 
       const params = new URLSearchParams(window.location.search);
+      const arithmeticType = parseInt(params.get('arithmeticType') || '0');    // Arithmetic Types: Add/Sub (0), Multiplication (1), Division (2)
       const digits = parseInt(params.get('digits') || '0');
+      const digits1 = parseInt(params.get('digits1') || '0');
+      const digits2 = parseInt(params.get('digits2') || '0');
       const numbers = parseInt(params.get('numbers') || '0');
       const speed = parseFloat(params.get('speed') || '0');
 
       const problemGen = new ProblemGenerator();
-      const { entries, result } = problemGen.addSubtract(numbers, digits);
+      let problemSet!: ProblemSet;
+
+      // Generate Problem Set based on Arithmetic Type
+      if (arithmeticType == 0) {
+        problemSet = problemGen.addSubtract(numbers, digits);
+      } else if (arithmeticType == 1) {
+        problemSet = problemGen.multiply(digits1, digits2);
+      } else if (arithmeticType == 2) {
+        problemSet = problemGen.divide(digits1, digits2);
+      }
 
       function updateAccuracy() {
         const correctCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
@@ -195,7 +207,7 @@ import Accuracy from '../components/Accuracy.astro';
 
       updateAccuracy();
 
-      function flashNumbers(numbersArr: number[], speedSeconds: number) {
+      function flashNumbers(numbersArr: number[], speedSeconds: number, arithmeticType: number) {
         const currentlyFlashing = document.getElementById('currentlyFlashing');
         const flashContainer = document.getElementById('flashContainer');
         const resultInput = document.getElementById('resultInput');
@@ -237,9 +249,17 @@ import Accuracy from '../components/Accuracy.astro';
           if (currentlyFlashing) {
             currentlyFlashing.style.visibility = 'visible';
           }
-          if (flashContainer) {
+
+          if (flashContainer && arithmeticType == 0) {
             flashContainer.textContent = numbersArr[index].toString();
+
+          } else if (flashContainer && arithmeticType == 1) {
+            flashContainer.textContent = numbersArr[index].toString() + " x " + numbersArr[++index].toString();
+
+          } else if (flashContainer && arithmeticType == 2) {
+            flashContainer.textContent = numbersArr[index].toString() + " ÷ " + numbersArr[++index].toString();
           }
+          
           index++;
 
           setTimeout(() => {
@@ -253,7 +273,7 @@ import Accuracy from '../components/Accuracy.astro';
         showNextNumber();
       }
 
-      flashNumbers(entries, speed);
+      flashNumbers(problemSet.entries, speed, arithmeticType);
 
       const backButton = document.getElementById('backButton');
       if (backButton) {
@@ -282,7 +302,7 @@ import Accuracy from '../components/Accuracy.astro';
           const currentCorrectCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
           const currentIncorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
 
-        if (userInput === result.toString()) {
+        if (userInput === problemSet.result.toString()) {
     
           updateScore(1);
           resultMessage.textContent = "Correct!";
@@ -295,7 +315,7 @@ import Accuracy from '../components/Accuracy.astro';
           if (currentScore > 0) {
             updateScore(-1);
           }
-      resultMessage.textContent = `Incorrect, the correct answer is: ${result}`;
+      resultMessage.textContent = `Incorrect, the correct answer is: ${problemSet.result}`;
       resultMessage.className = "incorrect";
       
    
@@ -306,8 +326,9 @@ import Accuracy from '../components/Accuracy.astro';
 
           if (previousProblem) {
             previousProblem.addEventListener('click', () => {
-              localStorage.setItem('previousEntries', JSON.stringify(entries));
-              localStorage.setItem('previousResult', JSON.stringify(result));
+              localStorage.setItem('previousEntries', JSON.stringify(problemSet.entries));
+              localStorage.setItem('previousResult', JSON.stringify(problemSet.result));
+              localStorage.setItem('arithmeticType', JSON.stringify(arithmeticType));
               
               window.location.href = '/previous';
             });
