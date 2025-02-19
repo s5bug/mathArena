@@ -1,6 +1,8 @@
 ---
 import '../styles/styles.css';
 import Button from '../components/Button.astro';
+import Accuracy from '../components/Accuracy.astro';
+
 ---
 
 <head>
@@ -83,6 +85,25 @@ import Button from '../components/Button.astro';
         border-radius: 5px;
       }
 
+      #accuracy-box {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20vw;
+        height: 40px;
+        background: rgb(57, 153, 237);
+        padding: 5px;
+        border: black;
+        font-size: 1.2rem;
+        text-align: center;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+
       #resultMessage {
         font-size: 2rem;
         margin-top: 20px;
@@ -91,6 +112,8 @@ import Button from '../components/Button.astro';
         font-weight: bold;
         display: none;
       }
+
+
 
       .correct {
         background-color: lightgreen;
@@ -104,13 +127,19 @@ import Button from '../components/Button.astro';
     </style>
 </head>
 
+
 <body>
   <div id="score-box">Score: 0</div>
+  <div id="accuracy-box">Accuracy: 0%</div>
+ 
+
   <div class="flash-container">
     <div id="currentlyFlashing" class="currently-flashing"></div>
     <div id="flashContainer" class="flash-number"></div>
 
     <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+
+
 
     <Button id="submitButton" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
       Submit Answer
@@ -137,6 +166,15 @@ import Button from '../components/Button.astro';
         scoreBox.textContent = `Score: ${getScore()}`;
       }
 
+      if (localStorage.getItem('correctCount') === null) {
+        localStorage.setItem('correctCount', '0');
+      }
+      if (localStorage.getItem('incorrectCount') === null) {
+        localStorage.setItem('incorrectCount', '0');
+      }
+
+      const accuracyBox = document.getElementById("accuracy-box");
+
       const params = new URLSearchParams(window.location.search);
       const digits = parseInt(params.get('digits') || '0');
       const numbers = parseInt(params.get('numbers') || '0');
@@ -144,6 +182,18 @@ import Button from '../components/Button.astro';
 
       const problemGen = new ProblemGenerator();
       const { entries, result } = problemGen.addSubtract(numbers, digits);
+
+      function updateAccuracy() {
+        const correctCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
+        const incorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
+        const total = correctCount+incorrectCount;
+        const accuracy = total > 0 ? (correctCount / total) *100 : 0;
+        if (accuracyBox) {
+          accuracyBox.textContent = `Accuracy: ${accuracy.toFixed(2)}%`;
+        }
+      }
+
+      updateAccuracy();
 
       function flashNumbers(numbersArr: number[], speedSeconds: number) {
         const currentlyFlashing = document.getElementById('currentlyFlashing');
@@ -212,6 +262,8 @@ import Button from '../components/Button.astro';
         });
       }
 
+      
+
       function checkAnswer() {
 
         const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
@@ -227,19 +279,30 @@ import Button from '../components/Button.astro';
           resultInput.disabled = true;
           submitButton.disabled = true;
 
-          if (userInput === result.toString()) {
-            // Cif the answer is right
-            updateScore(1);
-            resultMessage.textContent = "Correct!";
-            resultMessage.className = "correct";
-          } else {
-            // if the answer is wrong
-            if (currentScore > 0) {
-              updateScore(-1);
-            }
-            resultMessage.textContent = `Incorrect, the correct answer is: ${result}`;
-            resultMessage.className = "incorrect";
+          const currentCorrectCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
+          const currentIncorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
+
+        if (userInput === result.toString()) {
+    
+          updateScore(1);
+          resultMessage.textContent = "Correct!";
+          resultMessage.className = "correct";
+      
+        
+           localStorage.setItem('correctCount', (currentCorrectCount + 1).toString());
+        } else {
+      
+          if (currentScore > 0) {
+            updateScore(-1);
           }
+      resultMessage.textContent = `Incorrect, the correct answer is: ${result}`;
+      resultMessage.className = "incorrect";
+      
+   
+      localStorage.setItem('incorrectCount', (currentIncorrectCount + 1).toString());
+    }
+
+    updateAccuracy();
 
           if (previousProblem) {
             previousProblem.addEventListener('click', () => {
@@ -249,7 +312,7 @@ import Button from '../components/Button.astro';
               window.location.href = '/previous';
             });
           }
-          // Show the result message
+     
           resultMessage.style.display = "block";
           if (previousProblem) {
             previousProblem.style.display = 'block'; 
