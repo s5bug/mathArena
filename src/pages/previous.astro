@@ -87,7 +87,7 @@ import Button from '../components/Button.astro';
 
     if (backButton && previousURL) {
         backButton.addEventListener('click', () => {
-          window.location.href = previousURL;
+          window.history.back();
     });
    } 
   });
