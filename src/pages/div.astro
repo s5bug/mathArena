@@ -71,6 +71,8 @@ import '../styles/styles.css';
 </Button>
 
 <script>
+  import { ArithmeticType } from '../lib/enums';
+
   const digitsInput1 = document.querySelector('#digitsInput1') as HTMLInputElement;
   const digitsInput2 = document.querySelector('#digitsInput2') as HTMLInputElement;
   const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
@@ -96,7 +98,7 @@ import '../styles/styles.css';
       url.searchParams.set('digits1', digits1Val);
       url.searchParams.set('digits2', digits2Val);
       url.searchParams.set('speed', speedVal);
-      url.searchParams.set('arithmeticType', '2');
+      url.searchParams.set('arithType', ArithmeticType.Division.toString());
 
       // Navigate
       window.location.href = url.toString();
