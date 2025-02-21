@@ -2,6 +2,9 @@
 import '../styles/styles.css';
 import Button from '../components/Button.astro';
 import SideMenu from '../components/SideMenu.astro';
+
+import { actions } from 'astro:actions';
+const time = await Astro.callAction(actions.serverTime, undefined);
 ---
 
 <html lang="en">
@@ -14,7 +17,7 @@ import SideMenu from '../components/SideMenu.astro';
   </head>
   <body>
 
-    <h1 id="title">Math Arena</h1>
+    <h1 id="title">Math Arena {time.data}</h1>
     <SideMenu></SideMenu>
     
     <div class="gameSelectButtons">
