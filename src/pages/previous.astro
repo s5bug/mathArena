@@ -40,7 +40,6 @@ import Button from '../components/Button.astro';
     document.addEventListener('DOMContentLoaded', () => {
     const problemEntries = JSON.parse(localStorage.getItem('previousEntries') || "This Shouldn't Be Possible");
     const correctResult = localStorage.getItem('previousResult');
-    const previousURL = localStorage.getItem('previousURL');
     const previousArithmeticType = parseInt(localStorage.getItem('previousArithmeticType') || "0");
 
     const problemEntriesDiv = document.getElementById('problemEntries');
@@ -85,9 +84,9 @@ import Button from '../components/Button.astro';
         });
       }
 
-    if (backButton && previousURL) {
+    if (backButton) {
         backButton.addEventListener('click', () => {
-          window.location.href = previousURL;
+          window.history.back();
     });
    } 
   });
