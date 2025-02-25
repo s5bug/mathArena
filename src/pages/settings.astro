@@ -175,7 +175,9 @@ const colors = [
       localStorage.setItem("selectedTheme", image);
 
       // Close popup
+      if (themePopup) {
       themePopup.classList.remove("show");
+      }
     }
   });
 
