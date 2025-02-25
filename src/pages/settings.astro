@@ -143,34 +143,41 @@ const colors = [
      document.body.style.backgroundImage = `url('/${savedTheme}')`;
    }
 
-
+   if (chooseThemeButton){
    chooseThemeButton.addEventListener("click", () => {
      themePopup.classList.add("show");
    });
+    }
 
 
    document.addEventListener("click", (e) => {
-     if (!themePopup.contains(e.target) && !chooseThemeButton.contains(e.target)) {
-       themePopup.classList.remove("show");
+    if (chooseThemeButton && themePopup){
+    if (!(themePopup.contains(e.target as HTMLButtonElement)) && !(chooseThemeButton.contains(e.target as HTMLButtonElement))) {
+        if(themePopup) {
+            themePopup.classList.remove("show");
+        }
      }
+
+
+    }
    });
 
 
-   colorButtons.forEach(button => {
-     button.addEventListener("click", (e) => {
-       const image = e.target.getAttribute("data-image");
-      
-       // Update background
-       document.body.style.backgroundImage = `url('/${image}')`;
+   themePopup.addEventListener("click", (e) => {
+    const button = e.target;
+    if (button && button.classList.contains("color-button")) {
+      const image = button.getAttribute("data-image");
 
+      // Update background
+      document.body.style.backgroundImage = `url('/${image}')`;
 
-       // Store selected theme in localStorage
-       localStorage.setItem("selectedTheme", image);
+      // Store selected theme in localStorage
+      localStorage.setItem("selectedTheme", image);
 
+      // Close popup
+      themePopup.classList.remove("show");
+    }
+  });
 
-       // Close popup
-       themePopup.classList.remove("show");
-     });
-   });
  });
 </script>
