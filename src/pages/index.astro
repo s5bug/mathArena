@@ -79,6 +79,12 @@ const time = await Astro.callAction(actions.serverTime, undefined);
           return parseInt(localStorage.getItem("userScore") || "0", 10);
         }
 
+        const savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) {
+            document.body.style.backgroundImage = `url('/${savedTheme}')`; 
+          }
+
+
         // updating from localstorage
         function updateScore(change) {
           const newScore = getScore() + change;

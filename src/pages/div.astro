@@ -78,6 +78,17 @@ import '../styles/styles.css';
   const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
   const nextButton = document.querySelector('#nextButton');
 
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const savedTheme = localStorage.getItem("selectedTheme");
+      if (savedTheme) {
+      document.body.style.backgroundImage = `url('/${savedTheme}')`; 
+      }
+  });
+  
+
+
   nextButton?.addEventListener('click', () => {
     if (!digitsInput1 || !digitsInput2 || !speedInput) {
         alert('Inputs not found in the DOM.');
