@@ -1,9 +1,32 @@
 ---
+export const prerender = false;
+
 import '../styles/styles.css';
 import Button from '../components/Button.astro';
 import SideMenu from '../components/SideMenu.astro';
 
 import { actions } from 'astro:actions';
+import { getAuth } from "firebase-admin/auth";
+import { app } from "../lib/firebase_server.ts";
+
+// Check for server-side authentication
+let isAuthenticated = false;
+const auth = getAuth(app);
+
+if (Astro.cookies.has("__session")) {
+  const sessionCookie = Astro.cookies.get("__session")?.value;
+  if (sessionCookie) {
+    try {
+      const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+      if (decodedCookie) {
+        isAuthenticated = true;
+      }
+    } catch (error) {
+      // Invalid session cookie
+      console.error("Session verification error:", error);
+    }
+  }
+}
 ---
 
 <html lang="en">
@@ -38,10 +61,13 @@ import { actions } from 'astro:actions';
     <h1 id="title">Math Arena</h1>
     
     <div id="auth-container">
-      <a href="/login" id="sign-in-button">
-        <button>Sign In</button>
-      </a>
-      <div id="side-menu-container" class="hidden">
+      {!isAuthenticated ? (
+        <a href="/login" id="sign-in-button">
+          <button>Sign In</button>
+        </a>
+      ) : null}
+      
+      <div id="side-menu-container" class={isAuthenticated ? '' : 'hidden'}>
         <SideMenu />
       </div>
     </div>
@@ -101,24 +127,21 @@ import { actions } from 'astro:actions';
       import {getAuth, onAuthStateChanged} from 'firebase/auth';
       import {app} from "../lib/firebase_client.ts";
 
-      const auth = getAuth(app)
+      const auth = getAuth(app);
 
       document.addEventListener("DOMContentLoaded", () => {
         const signInButton = document.getElementById("sign-in-button");
         const sideMenuContainer = document.getElementById("side-menu-container");
 
-        // Listen for authentication state changes
+        // Listen for client-side auth changes
         onAuthStateChanged(auth, (user) => {
           if (user) {
+            // User is authenticated client-side
             if (signInButton) signInButton.style.display = "none";
             if (sideMenuContainer) sideMenuContainer.classList.remove("hidden");
-          } else {
-            if (signInButton) signInButton.style.display = "block";
-            if (sideMenuContainer) sideMenuContainer.classList.add("hidden");
           }
         });
       });
     </script>
-
   </body>
 </html>
