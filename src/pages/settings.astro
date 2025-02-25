@@ -177,7 +177,9 @@ const colors = [
       document.body.style.backgroundImage = `url('/${image}')`;
 
       // Store selected theme in localStorage
-      localStorage.setItem("selectedTheme", image);
+      if (image) {
+    localStorage.setItem("selectedTheme", image);
+        }   
 
       // Close popup
       if (themePopup) {
