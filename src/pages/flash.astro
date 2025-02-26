@@ -55,6 +55,12 @@ import Accuracy from '../components/Accuracy.astro';
         display: none;
       }
 
+      #newProblem {
+        font-family: Lucida Sans Unicode;
+        margin: 20px auto;
+        display: none;
+      }
+
       #previousProblem {
         position: fixed;
         bottom: 20px;
@@ -149,8 +155,12 @@ import Accuracy from '../components/Accuracy.astro';
       Back
     </Button>
 
+    <Button id="newProblem" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
+      <span class=reload>&#x21bb;</span>
+    </Button>
+
     <Button id="previousProblem" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
-      Previous Problem
+      Previous
     </Button>
 
     <div id="resultMessage"></div>
@@ -220,10 +230,11 @@ import Accuracy from '../components/Accuracy.astro';
         const flashContainer = document.getElementById('flashContainer');
         const resultInput = document.getElementById('resultInput');
         const backButton = document.getElementById('backButton');
+        const newProblem = document.getElementById('newProblem');
 
         const submitButton = document.getElementById('submitButton');
 
-        if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton) return;
+        if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton || !newProblem) return;
 
         let index = 0;
         const showTime = speedSeconds * 1000;
@@ -246,6 +257,9 @@ import Accuracy from '../components/Accuracy.astro';
               }
               if (backButton) {
                 backButton.style.display = 'block'; 
+              }
+              if (newProblem) {
+                newProblem.style.display = 'block'; 
               }
               if (submitButton) {
                 submitButton.style.display = 'block';
@@ -293,10 +307,15 @@ import Accuracy from '../components/Accuracy.astro';
       const backButton = document.getElementById('backButton');
       if (backButton) {
         backButton.addEventListener('click', () => {
-          window.history.back(); // Go back to the previous page
+          window.history.back(); 
         });
       }
-
+      const newProblem = document.getElementById('newProblem');
+      if (newProblem) {
+        newProblem.addEventListener('click', () => {
+          window.location.reload();
+        });
+      }
       
 
       function checkAnswer() {
