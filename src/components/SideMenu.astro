@@ -67,15 +67,9 @@ if (Astro.cookies.has("__session")) {
 
     logoutButton?.addEventListener("click", async () => {
       try {
-        const response = await actions.logout({});
-        if (response.data?.success) {
-          console.log("Successfully logged out");
-          window.location.href = "/";
-        } else {
-          console.error("Error logging out");
-        }
-        // window.location.reload();
-        // window.location.href = "/login";
+        await actions.logout({});
+        console.log("Successfully logged out");
+        window.location.href = "/";
       } catch (error) {
         console.error("Error logging out:", error);
       }

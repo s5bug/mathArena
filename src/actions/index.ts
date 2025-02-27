@@ -43,8 +43,7 @@ export const server = {
     logout: defineAction({
         input: z.object({}),
         handler: async (_, ctx) => {
-            ctx.cookies.set("__session", "", { path: "/", expires: new Date(0) });
-            return {success: true};
+            ctx.cookies.delete("__session", { path: "/" });
         }
     })
 }
