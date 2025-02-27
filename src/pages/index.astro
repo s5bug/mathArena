@@ -81,8 +81,8 @@ const time = await Astro.callAction(actions.serverTime, undefined);
 
         const savedTheme = localStorage.getItem("selectedTheme");
             if (savedTheme) {
-            document.body.style.backgroundImage = `url('/${savedTheme}')`; 
-          }
+            document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+            }
 
 
         // updating from localstorage
