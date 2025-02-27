@@ -44,11 +44,7 @@ export const server = {
         input: z.object({}),
         handler: async (_, ctx) => {
             ctx.cookies.set("__session", "", { path: "/", expires: new Date(0) });
-            
-            return new Response(null, {
-                status: 302,
-                headers: { Location: "/" },
-            });
+            return {success: true};
         }
     })
 }

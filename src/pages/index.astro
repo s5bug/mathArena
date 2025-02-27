@@ -66,9 +66,9 @@ if (Astro.cookies.has("__session")) {
           <button>Sign In</button>
         </a>
       ) : null}
-      
+
       <div id="side-menu-container" class={isAuthenticated ? '' : 'hidden'}>
-        <SideMenu />
+        {isAuthenticated ? <SideMenu /> : null}
       </div>
     </div>
 

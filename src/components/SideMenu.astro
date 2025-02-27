@@ -1,5 +1,4 @@
 ---
-import { actions } from 'astro:actions';
 import { getAuth } from 'firebase-admin/auth';
 import { app } from "../lib/firebase_server.ts";
 
@@ -33,7 +32,9 @@ if (Astro.cookies.has("__session")) {
     <button id="logout-button" class="menu-option logout">Logout</button>
 </div>
 
-<script type="module">
+<script>
+  // import { actions } from 'astro:actions';
+  import { actions } from 'astro:actions';
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("menu-button");
     const sideMenu = document.getElementById("side-menu");
@@ -58,16 +59,23 @@ if (Astro.cookies.has("__session")) {
 
     document.addEventListener("click", (event) => {
       let target = event.target;
-      if (!sideMenu.contains(target)) {
+      if (target instanceof Node && !sideMenu.contains(target)) {
         sideMenu.classList.remove("open");
         menuButton.classList.remove("hidden");
       }
     });
 
-    logoutButton.addEventListener("click", async () => {
+    logoutButton?.addEventListener("click", async () => {
       try {
-        await actions.logout();
-        window.location.href = "/login";
+        const response = await actions.logout({});
+        if (response.data?.success) {
+          console.log("Successfully logged out");
+          window.location.href = "/";
+        } else {
+          console.error("Error logging out");
+        }
+        // window.location.reload();
+        // window.location.href = "/login";
       } catch (error) {
         console.error("Error logging out:", error);
       }
