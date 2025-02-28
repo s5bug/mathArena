@@ -83,8 +83,8 @@ import '../styles/styles.css';
 
     const savedTheme = localStorage.getItem("selectedTheme");
       if (savedTheme) {
-      document.body.style.backgroundImage = `url('/${savedTheme}')`; 
-      }
+      document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+          }
   });
   
 

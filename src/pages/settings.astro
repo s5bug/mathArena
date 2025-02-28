@@ -2,20 +2,7 @@
 import NumberInput from '../components/NumberInput.astro';
 import Button from '../components/Button.astro';
 import '../styles/styles.css';
-
-
-const colors = [
- { color: "#2baced", image: "baseBlue.jpg" },  // Default blue
- { color: "#000000", image: "baseBlack.jpg" }, // Black
- { color: "#00FFFF", image: "baseCyan.jpg" },  // Cyan
- { color: "#FF1493", image: "basePink.jpg" },  // Pink
- { color: "#FF1373", image: "baseDarkPink.jpg" }, // Dark Pink "#FF1373"
- { color: "#008000", image: "baseGreen.jpg" }, // Green
- { color: "#FF0000", image: "baseRed.jpg" },   // Red
- { color: "#800080", image: "basePurple.jpg" }, // Purple
- { color: "#EEEE00", image: "baseYellow.jpg" }, // Yellow
- { color: "#FFA500", image: "baseOrange.jpg" }, // Orange
-];
+import {colors} from "../lib/colors";
 ---
 
 
@@ -34,11 +21,11 @@ const colors = [
 
  <div class="theme-popup" id="theme-popup">
    <div class="color-picker">
-     {colors.map(({ color, image }) => (
+     {colors.map(({ color, svgStroke }) => (
        <button
          style={{ backgroundColor: color }}
          class="color-button"
-         data-image={image}
+         data-color={svgStroke}
        ></button>
      ))}
    </div>
@@ -132,62 +119,39 @@ const colors = [
 
 
 <script>
- document.addEventListener("DOMContentLoaded", () => {
-   const chooseThemeButton = document.getElementById("choose-theme-btn");
-   const themePopup = document.getElementById("theme-popup");
-   const colorButtons = document.querySelectorAll(".color-button");
-  
-   // Load saved theme from localStorage
-   const savedTheme = localStorage.getItem("selectedTheme");
-   if (savedTheme) {
-     document.body.style.backgroundImage = `url('/${savedTheme}')`;
-   }
+    const chooseThemeButton = document.getElementById("choose-theme-btn")!;
+    const themePopup = document.getElementById("theme-popup")!;
+    const colorButtons = document.querySelectorAll(".color-button");
 
-   if (chooseThemeButton){
-   chooseThemeButton.addEventListener("click", () => {
-    if (themePopup) {
-     themePopup.classList.add("show");
-    }
-   });
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+        document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
     }
 
+    chooseThemeButton.addEventListener("click", () => {
+        themePopup.classList.add("show");
+    })
 
-   document.addEventListener("click", (e) => {
-    if (chooseThemeButton && themePopup){
-    if (!(themePopup.contains(e.target as HTMLButtonElement)) && !(chooseThemeButton.contains(e.target as HTMLButtonElement))) {
-        if(themePopup) {
+    document.addEventListener("click", (e) => {
+        if (!(themePopup.contains(e.target as HTMLButtonElement)) && !(chooseThemeButton.contains(e.target as HTMLButtonElement))) {
             themePopup.classList.remove("show");
         }
-     }
+    });
 
-
-    }
-   });
-
-   if (themePopup){
    themePopup.addEventListener("click", (e) => {
-    
-    const button = e.target as HTMLButtonElement;
+       const button = e.target as HTMLButtonElement;
+       if (button.classList.contains("color-button")) {
+           const color = button.getAttribute("data-color")!;
 
-    if (button && button.classList.contains("color-button")) {
-      const image = button.getAttribute("data-image");
+           // Update background
+           document.body.style.backgroundImage = `url('/background.svg?color=${color.slice(1)}')`;
 
+           // Store selected theme in localStorage
+           localStorage.setItem("selectedTheme", color);
 
-      // Update background
-      document.body.style.backgroundImage = `url('/${image}')`;
-
-      // Store selected theme in localStorage
-      if (image) {
-    localStorage.setItem("selectedTheme", image);
-        }   
-
-      // Close popup
-      if (themePopup) {
-      themePopup.classList.remove("show");
-      }
-    }
-  });
-    }
-
- });
+           // Close popup
+           themePopup.classList.remove("show");
+       }
+   });
 </script>

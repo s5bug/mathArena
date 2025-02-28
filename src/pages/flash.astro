@@ -15,7 +15,7 @@ import Accuracy from '../components/Accuracy.astro';
         height: 100vh;
         margin: 0;
         font-family: Arial, sans-serif;
-        background-image: url('/mathArenaBkg.jpg');
+        background-image: url('/background.svg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -176,7 +176,7 @@ import Accuracy from '../components/Accuracy.astro';
 
       const savedTheme = localStorage.getItem("selectedTheme");
       if (savedTheme) {
-        document.body.style.backgroundImage = `url('/${savedTheme}')`; 
+        document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
       }
 
       const accuracyBox = document.getElementById("accuracy-box");
