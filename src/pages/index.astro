@@ -149,12 +149,15 @@ if (Astro.cookies.has("__session")) {
         function updateScore(change) {
           const newScore = getScore() + change;
           localStorage.setItem("userScore", newScore.toString());
-          scoreBox.innerText = `Score: ${newScore}`;
+          if(scoreBox){
+            scoreBox.innerText = `Score: ${newScore}`;
+          }
         }
 
         // Initialize the score display
+        if(scoreBox) {
         scoreBox.innerText = `Score: ${getScore()}`;
-
+        }
         // Listen for client-side auth changes
         onAuthStateChanged(auth, (user) => {
           if (user) {
