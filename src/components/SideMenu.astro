@@ -1,7 +1,6 @@
 ---
 import { getAuth } from 'firebase-admin/auth';
 import { app } from "../lib/firebase_server.ts";
-import { actions } from 'astro:actions';
 
 /* Check if the user is authenticated */
 const auth = getAuth(app);
@@ -34,49 +33,12 @@ if (Astro.cookies.has("__session")) {
 </div>
 
 <script>
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const menuButton = document.getElementById("menu-button")!;
-      const sideMenu = document.getElementById("side-menu")!;
-  
-     
-      menuButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        sideMenu.classList.toggle("open");
-  
-   
-        if (sideMenu.classList.contains("open")) {
-          menuButton.classList.add("hidden");
-        }
-      });
-  
-      document.addEventListener("click", (event) => {
-        let target: HTMLElement | null = event.target as (HTMLElement | null)
-        if (target && !target.closest(".side-menu") && !target.closest(".menu-button")) {
-          sideMenu.classList.remove("open");
-          menuButton.classList.remove("hidden");
-        }
-      });
-  
-      sideMenu.querySelector(".progress-button")!.addEventListener("click", () => {
-        alert("Go to progress page");
-      });
-
-      sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
-        window.location.href = "/settings";
-      });
-
-      sideMenu.querySelector(".logout")!.addEventListener("click", () => {
-        alert("Log User Out");
-      });
-
   // import { actions } from 'astro:actions';
- 
-
+  import { actions } from 'astro:actions';
   document.addEventListener("DOMContentLoaded", () => {
-    const menuButton = document.getElementById("menu-button")!;
-    const sideMenu = document.getElementById("side-menu")!;
-    const logoutButton = document.getElementById("logout-button")!;
+    const menuButton = document.getElementById("menu-button");
+    const sideMenu = document.getElementById("side-menu");
+    const logoutButton = document.getElementById("logout-button");
 
     if (!menuButton || !sideMenu) {
       console.error("Menu button or side menu not found!");
@@ -96,22 +58,18 @@ if (Astro.cookies.has("__session")) {
     });
 
     document.addEventListener("click", (event) => {
-      let target = event.target as Node;
-      if (!sideMenu.contains(target) && !menuButton.contains(target)) {
+      let target = event.target;
+      if (target instanceof Node && !sideMenu.contains(target)) {
         sideMenu.classList.remove("open");
         menuButton.classList.remove("hidden");
       }
-    });
-
-    sideMenu.querySelector(".progress-button")!.addEventListener("click", () => {
-      alert("Go to progress page");
     });
 
     sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
       window.location.href = "/settings";
     });
 
-    logoutButton.addEventListener("click", async () => {
+    logoutButton?.addEventListener("click", async () => {
       try {
         await actions.logout({});
         console.log("Successfully logged out");
@@ -125,7 +83,6 @@ if (Astro.cookies.has("__session")) {
       console.log("Clicked element:", e.target);
     });
   });
-});
 </script>
 
 <style>
