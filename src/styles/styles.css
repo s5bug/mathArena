@@ -22,7 +22,7 @@ font-size: 120px;
     gap: 20px;
 }
 body {
-  background-image: url('/mathArenaBkg.jpg');
+  background-image: url('/background.svg?color=6d9eeb');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

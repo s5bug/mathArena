@@ -79,6 +79,15 @@ import '../styles/styles.css';
     const numbersInput = document.querySelector('#numbersInput') as HTMLInputElement;
     const speedInput = document.querySelector('#speedInput') as HTMLInputElement;
 
+    document.addEventListener('DOMContentLoaded', () => {
+
+const savedTheme = localStorage.getItem("selectedTheme");
+  if (savedTheme) {
+  document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+      }
+});
+
+
     nextBtn?.addEventListener('click', () => {
       if (!digitsInput || !numbersInput || !speedInput) {
         alert('Inputs not found in the DOM.');

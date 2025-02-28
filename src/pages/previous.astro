@@ -38,6 +38,11 @@ import Button from '../components/Button.astro';
     import { ArithmeticType } from "../lib/enums";
 
     document.addEventListener('DOMContentLoaded', () => {
+
+      const savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) {
+            document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+                }
     const problemEntries = JSON.parse(localStorage.getItem('previousEntries') || "This Shouldn't Be Possible");
     const correctResult = localStorage.getItem('previousResult');
     const previousArithmeticType = parseInt(localStorage.getItem('previousArithmeticType') || "0");

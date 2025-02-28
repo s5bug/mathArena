@@ -124,19 +124,43 @@ if (Astro.cookies.has("__session")) {
     </div> 
 
     <script>
-      import {getAuth, onAuthStateChanged} from 'firebase/auth';
-      import {app} from "../lib/firebase_client.ts";
-
-      const auth = getAuth(app);
+      import { getAuth, onAuthStateChanged } from 'firebase/auth';
+      import { app } from "../lib/firebase_client.ts";
 
       document.addEventListener("DOMContentLoaded", () => {
         const signInButton = document.getElementById("sign-in-button");
         const sideMenuContainer = document.getElementById("side-menu-container");
+        const scoreBox = document.getElementById("score-box");
 
+        const auth = getAuth(app);
+
+        // Load saved theme from localStorage
+        const savedTheme = localStorage.getItem("selectedTheme");
+        if (savedTheme) {
+          document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+        }
+
+        // Function to get the stored score
+        function getScore() {
+          return parseInt(localStorage.getItem("userScore") || "0", 10);
+        }
+
+        // Function to update score in localStorage
+        function updateScore(change: number) {
+          const newScore = getScore() + change;
+          localStorage.setItem("userScore", newScore.toString());
+          if(scoreBox){
+            scoreBox.innerText = `Score: ${newScore}`;
+          }
+        }
+
+        // Initialize the score display
+        if(scoreBox) {
+        scoreBox.innerText = `Score: ${getScore()}`;
+        }
         // Listen for client-side auth changes
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            // User is authenticated client-side
             if (signInButton) signInButton.style.display = "none";
             if (sideMenuContainer) sideMenuContainer.classList.remove("hidden");
           }

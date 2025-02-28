@@ -65,6 +65,10 @@ if (Astro.cookies.has("__session")) {
       }
     });
 
+    sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
+      window.location.href = "/settings";
+    });
+
     logoutButton?.addEventListener("click", async () => {
       try {
         await actions.logout({});
