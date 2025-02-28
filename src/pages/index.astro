@@ -146,7 +146,7 @@ if (Astro.cookies.has("__session")) {
         }
 
         // Function to update score in localStorage
-        function updateScore(change) {
+        function updateScore(change: number) {
           const newScore = getScore() + change;
           localStorage.setItem("userScore", newScore.toString());
           if(scoreBox){
