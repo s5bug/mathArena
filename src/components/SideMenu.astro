@@ -1,6 +1,7 @@
 ---
 import { getAuth } from 'firebase-admin/auth';
 import { app } from "../lib/firebase_server.ts";
+import { actions } from 'astro:actions';
 
 /* Check if the user is authenticated */
 const auth = getAuth(app);
@@ -70,7 +71,7 @@ if (Astro.cookies.has("__session")) {
       });
 
   // import { actions } from 'astro:actions';
-  import { actions } from 'astro:actions';
+ 
 
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("menu-button")!;
