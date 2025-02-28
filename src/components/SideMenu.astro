@@ -1,15 +1,39 @@
 ---
+import { getAuth } from 'firebase-admin/auth';
+import { app } from "../lib/firebase_server.ts";
+
+/* Check if the user is authenticated */
+const auth = getAuth(app);
+let userEmail = "[Display User Email]";
+
+if (Astro.cookies.has("__session")) {
+  const sessionCookie = Astro.cookies.get("__session")?.value;
+  if (sessionCookie) {
+    try {
+      const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+      if (decodedCookie.email) {
+        userEmail = decodedCookie.email;
+      }
+    } catch (error) {
+      console.error("Session verification failed:", error);
+    }
+  }
+}
 ---
 
+<button id="menu-button">
+    <div></div>
+</button>
 
 <div id="side-menu">
-    <div class="menu-option email-box">[Display User Email]</div>
+    <div class="menu-option email-box" id="user-email">{userEmail}</div>
     <div class="menu-option progress-button">Progress</div>
     <div class="menu-option account-settings">Account Settings</div>
-    <div class="menu-option logout">Logout</div>
+    <button id="logout-button" class="menu-option logout">Logout</button>
 </div>
 
 <script>
+
     document.addEventListener("DOMContentLoaded", () => {
       const menuButton = document.getElementById("menu-button")!;
       const sideMenu = document.getElementById("side-menu")!;
@@ -45,12 +69,55 @@
         alert("Log User Out");
       });
 
-      
+  // import { actions } from 'astro:actions';
+  import { actions } from 'astro:actions';
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuButton = document.getElementById("menu-button");
+    const sideMenu = document.getElementById("side-menu");
+    const logoutButton = document.getElementById("logout-button");
+
+    if (!menuButton || !sideMenu) {
+      console.error("Menu button or side menu not found!");
+      return;
+    }
+
+    menuButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      console.log("Menu button clicked"); // Debugging
+      sideMenu.classList.toggle("open");
+
+      if (sideMenu.classList.contains("open")) {
+        menuButton.classList.add("hidden");
+      } else {
+        menuButton.classList.remove("hidden");
+      }
     });
+
+    document.addEventListener("click", (event) => {
+      let target = event.target;
+      if (target instanceof Node && !sideMenu.contains(target)) {
+        sideMenu.classList.remove("open");
+        menuButton.classList.remove("hidden");
+      }
+    });
+
+    logoutButton?.addEventListener("click", async () => {
+      try {
+        await actions.logout({});
+        console.log("Successfully logged out");
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    });
+
+    document.body.addEventListener("click", (e) => {
+      console.log("Clicked element:", e.target);
+    });
+  });
 </script>
 
 <style>
-
     #menu-button {
       position: fixed;
       top: 1rem;
@@ -63,9 +130,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 101;
       transition: opacity 0.3s ease;
-      border-radius: 50%; 
+      border-radius: 50%;
     }
 
     #menu-button:hover {
@@ -77,14 +144,14 @@
       opacity: 0;
       pointer-events: none;
     }
-  
+
     #menu-button div {
       width: 60%;
       height: 4px;
       background: white;
       position: relative;
     }
-  
+
     #menu-button div::before,
     #menu-button div::after {
       content: "";
@@ -94,15 +161,15 @@
       background: white;
       left: 0;
     }
-  
+
     #menu-button div::before {
       top: -10px;
     }
-  
+
     #menu-button div::after {
       top: 10px;
     }
-  
+
     #side-menu {
       position: fixed;
       top: 0;
@@ -117,13 +184,12 @@
       flex-direction: column;
       padding: 1rem;
       gap: 1rem;
-      z-index: 99;
+      z-index: 100;
     }
-  
+
     #side-menu.open {
       transform: translateX(0);
     }
-  
 
     .menu-option {
       padding: 1rem;
@@ -133,43 +199,38 @@
       border-radius: 5px;
       transition: background 0.2s;
     }
-  
+
     .email-box {
       background: #2e8bc9;
       color: white;
       cursor: default;
     }
-  
+
     .progress-button {
       background: #1d99db;
       color: white;
     }
-  
+
     .progress-button:hover {
       background: #1d99db;
     }
-  
+
     .account-settings {
       background: #1cb0ff;
       color: white;
     }
-  
+
     .account-settings:hover {
       background: #1cb0ff;
       border: 2px solid gray;
     }
-  
+
     .logout {
       background: lightskyblue;
       color: white;
     }
-  
+
     .logout:hover {
       background: lightskyblue;
     }
-  </style>
-  
-
-  <button id="menu-button">
-    <div></div>
-  </button>
+</style>
