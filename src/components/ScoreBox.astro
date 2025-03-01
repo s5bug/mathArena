@@ -1,36 +1,22 @@
 ---
-const score = 0; // placeholder to avoid server error
+import { getAuth } from "firebase-admin/auth";
+import { app } from "../lib/firebase_server.ts";
+import ClientScoreBox from "./ClientScoreBox.astro";
+import ServerScoreBox from "./ServerScoreBox.astro";
+
+let loggedIn = false;
+let session = undefined;
+const auth = getAuth(app);
+if (Astro.cookies.has("__session")) {
+  const sessionCookie = Astro.cookies.get("__session")?.value;
+  if (sessionCookie) {
+    try {
+      const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+      session = sessionCookie;
+      loggedIn = true;
+    } catch {}
+  }
+}
 ---
 
-<div
-  id="score-box"
-  style="position: absolute;
-   top: 10px; 
-   left: 10px; 
-   width: 10vw; 
-   height: 40px; 
-   background: white; 
-   padding: 5px; 
-   border: 2px solid black;
-   font-size: 1.2rem;
-   text-align: center;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   font-weight: bold;
-   border-radius: 5px;"
->
-  Score: <span id="score-text">{score}</span>
-</div>
-
-<script>
-  if (typeof window !== 'undefined') {
-    const scoreText = document.getElementById('score-text');
-    const storedScore = localStorage.getItem('userScore');
-    const scoreValue = storedScore ? parseInt(storedScore, 10) : 0;
-
-    if (scoreText) {
-      scoreText.textContent = scoreValue.toString(); 
-    }
-  }
-</script>
+{ loggedIn ? <ServerScoreBox session={session} /> : <ClientScoreBox /> }

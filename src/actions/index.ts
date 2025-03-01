@@ -2,6 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
+import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
 
 const sessionTokenTTL =
     1000 * // s → ms
@@ -20,7 +21,7 @@ export const server = {
         }),
         handler: async ({ email, password, name }) => {
             const auth = getAuth(app);
-            await auth.createUser({
+            return await auth.createUser({
                     email,
                     password,
                     displayName: name,
@@ -38,12 +39,26 @@ export const server = {
             const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn: sessionTokenTTL })
 
             ctx.cookies.set("__session", sessionCookie, { path: "/" });
+
+            return sessionCookie
         }
     }),
     logout: defineAction({
-        input: z.object({}),
         handler: async (_, ctx) => {
             ctx.cookies.delete("__session", { path: "/" });
+        }
+    }),
+    updateScore: defineAction({
+        input: z.number(),
+        handler: async (newScore, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await updateScoreServer(session.value, newScore)
+        }
+    }),
+    getScore: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getScoreServer(session.value)
         }
     })
 }

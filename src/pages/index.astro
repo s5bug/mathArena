@@ -1,13 +1,14 @@
 ---
 export const prerender = false;
 
-import '../styles/styles.css';
-import Button from '../components/Button.astro';
-import SideMenu from '../components/SideMenu.astro';
+import "../styles/styles.css";
+import Button from "../components/Button.astro";
+import SideMenu from "../components/SideMenu.astro";
 
-import { actions } from 'astro:actions';
+import { actions } from "astro:actions";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
+import ScoreBox from "../components/ScoreBox.astro";
 
 // Check for server-side authentication
 let isAuthenticated = false;
@@ -18,9 +19,7 @@ if (Astro.cookies.has("__session")) {
   if (sessionCookie) {
     try {
       const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-      if (decodedCookie) {
-        isAuthenticated = true;
-      }
+      isAuthenticated = true;
     } catch (error) {
       // Invalid session cookie
       console.error("Session verification error:", error);
@@ -59,113 +58,72 @@ if (Astro.cookies.has("__session")) {
   </head>
   <body>
     <h1 id="title">Math Arena</h1>
-    
-    <div id="auth-container">
-      {!isAuthenticated ? (
-        <a href="/login" id="sign-in-button">
-          <button>Sign In</button>
-        </a>
-      ) : null}
 
-      <div id="side-menu-container" class={isAuthenticated ? '' : 'hidden'}>
+    <div id="auth-container">
+      {
+        !isAuthenticated ? (
+          <a href="/login" id="sign-in-button">
+            <button>Sign In</button>
+          </a>
+        ) : null
+      }
+
+      <div id="side-menu-container" class={isAuthenticated ? "" : "hidden"}>
         {isAuthenticated ? <SideMenu /> : null}
       </div>
     </div>
 
     <div class="gameSelectButtons">
-        <Button 
-            size="lg"
-            backgroundColor="#4ea7f5"
-            textColor="white"
-            borderColor="transparent"
-            href="/add"
-        >
-          Add/Sub
-        </Button>
+      <Button
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+        href="/add"
+      >
+        Add/Sub
+      </Button>
 
-        <Button 
-            size="lg"
-            backgroundColor="#4ea7f5"
-            textColor="white"
-            borderColor="transparent"
-            href="/mult"
-        >
-          Multiplication
-        </Button>
+      <Button
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+        href="/mult"
+      >
+        Multiplication
+      </Button>
 
-        <Button 
-            size="lg"
-            backgroundColor="#4ea7f5"
-            textColor="white"
-            borderColor="transparent"
-            href="/div"
-        >
-          Division
-        </Button>
+      <Button
+        size="lg"
+        backgroundColor="#4ea7f5"
+        textColor="white"
+        borderColor="transparent"
+        href="/div"
+      >
+        Division
+      </Button>
     </div>
 
-    <div id="score-box" style="
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 10vw;
-      height: 40px;
-      background: white;
-      padding: 5px;
-      border: 2px solid black;
-      font-size: 1.2rem;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      border-radius: 5px;">
-      Score: 0
-    </div> 
+    <!-- Just use ScoreBox Component -->
+    <ScoreBox server:defer />
 
     <script>
-      import { getAuth, onAuthStateChanged } from 'firebase/auth';
+      import { getAuth, onAuthStateChanged } from "firebase/auth";
       import { app } from "../lib/firebase_client.ts";
+      import { updateScore, getScore } from "../lib/score_client.ts";
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const signInButton = document.getElementById("sign-in-button");
-        const sideMenuContainer = document.getElementById("side-menu-container");
-        const scoreBox = document.getElementById("score-box");
+      const auth = getAuth(app);
 
-        const auth = getAuth(app);
+      const signInButton = document.getElementById("sign-in-button");
+      const sideMenuContainer = document.getElementById("side-menu-container");
+      const scoreBox = document.getElementById("score-box");
 
-        // Load saved theme from localStorage
-        const savedTheme = localStorage.getItem("selectedTheme");
-        if (savedTheme) {
-          document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
-        }
-
-        // Function to get the stored score
-        function getScore() {
-          return parseInt(localStorage.getItem("userScore") || "0", 10);
-        }
-
-        // Function to update score in localStorage
-        function updateScore(change: number) {
-          const newScore = getScore() + change;
-          localStorage.setItem("userScore", newScore.toString());
-          if(scoreBox){
-            scoreBox.innerText = `Score: ${newScore}`;
-          }
-        }
-
-        // Initialize the score display
-        if(scoreBox) {
-        scoreBox.innerText = `Score: ${getScore()}`;
-        }
-        // Listen for client-side auth changes
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            if (signInButton) signInButton.style.display = "none";
-            if (sideMenuContainer) sideMenuContainer.classList.remove("hidden");
-          }
-        });
-      });
+      // Load saved theme from localStorage
+      const savedTheme = localStorage.getItem("selectedTheme");
+      if (savedTheme) {
+        document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+      }
     </script>
   </body>
 </html>

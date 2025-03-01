@@ -1,0 +1,32 @@
+---
+
+---
+
+<div
+  id="score-box"
+  class="client"
+  style="position: absolute;
+   top: 10px; 
+   left: 10px; 
+   width: 10vw; 
+   height: 40px; 
+   background: white; 
+   padding: 5px; 
+   border: 2px solid black;
+   font-size: 1.2rem;
+   text-align: center;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: bold;
+   border-radius: 5px;"
+>
+  Score: <span id="score-text">0</span>
+</div>
+
+<script>
+import { getScoreLocalStorage } from "../lib/score_client.ts";
+
+const scoreText = document.getElementById('score-text')!;
+scoreText.innerText = getScoreLocalStorage().toString();
+</script>
