@@ -1,276 +1,341 @@
 ---
-import '../styles/styles.css';
-import Button from '../components/Button.astro';
-import Accuracy from '../components/Accuracy.astro';
+export const prerender = false;
 
+import "../styles/styles.css";
+import Button from "../components/Button.astro";
+import Accuracy from "../components/Accuracy.astro";
+import ScoreBox from "../components/ScoreBox.astro";
+import { getAuth } from "firebase-admin/auth";
+import { app } from "../lib/firebase_server.ts";
+
+let loggedIn = false;
+const auth = getAuth(app);
+if (Astro.cookies.has("__session")) {
+  const sessionCookie = Astro.cookies.get("__session")?.value;
+  if (sessionCookie) {
+    try {
+      await auth.verifySessionCookie(sessionCookie);
+    } catch {}
+  }
+}
 ---
 
 <head>
-    <title>Flashing Numbers</title>
+  <title>Flashing Numbers</title>
 </head>
 
 <body>
-  <div id="score-box">Score: 0</div>
+  <ScoreBox server:defer />
+
   <div id="accuracy-box">Accuracy: 0%</div>
- 
 
   <div class="flash-container">
     <div id="currentlyFlashing" class="currently-flashing"></div>
     <div id="flashContainer" class="flash-number"></div>
 
-    <input id="resultInput" class="result-input" type="text" placeholder="Enter result">
+    <input
+      id="resultInput"
+      class="result-input"
+      type="text"
+      placeholder="Enter result"
+    />
 
-
-
-    <Button id="submitButton" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
+    <Button
+      id="submitButton"
+      size="lg"
+      backgroundColor="#4ea7f5"
+      textColor="white"
+      borderColor="transparent"
+    >
       Submit Answer
     </Button>
 
-    <Button id="backButton" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent" href="/">
+    <Button
+      id="backButton"
+      size="lg"
+      backgroundColor="#4ea7f5"
+      textColor="white"
+      borderColor="transparent"
+      href="/"
+    >
       Back
     </Button>
 
-    <Button id="newProblem" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
-      <span class=reload>&#x21bb;</span>
+    <Button
+      id="newProblem"
+      size="lg"
+      backgroundColor="#4ea7f5"
+      textColor="white"
+      borderColor="transparent"
+    >
+      <span class="reload">&#x21bb;</span>
     </Button>
 
-    <Button id="previousProblem" size="lg" backgroundColor="#4ea7f5" textColor="white" borderColor="transparent">
+    <Button
+      id="previousProblem"
+      size="lg"
+      backgroundColor="#4ea7f5"
+      textColor="white"
+      borderColor="transparent"
+    >
       Previous
     </Button>
 
     <div id="resultMessage"></div>
   </div>
-  
+
   <script>
-    import { ProblemGenerator, ProblemSet } from '../lib/ProblemGenerator';
-    import { updateScore, getScore } from "../lib/score.ts";
-    import { ArithmeticType } from '../lib/enums';
+    import { ProblemGenerator, ProblemSet } from "../lib/ProblemGenerator";
+    import { ArithmeticType } from "../lib/enums";
+    import { updateScore } from "../lib/score_client";
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const scoreBox = document.getElementById("score-box");
-      if (scoreBox) {
-        scoreBox.textContent = `Score: ${getScore()}`;
+    if (localStorage.getItem("correctCount") === null) {
+      localStorage.setItem("correctCount", "0");
+    }
+    if (localStorage.getItem("incorrectCount") === null) {
+      localStorage.setItem("incorrectCount", "0");
+    }
+
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+      document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+    }
+
+    const accuracyBox = document.getElementById("accuracy-box");
+
+    const params = new URLSearchParams(window.location.search);
+    const arithType = parseInt(params.get("arithType") || "0"); // Arithmetic Types: Add/Sub (0), Multiplication (1), Division (2)
+    const digits = parseInt(params.get("digits") || "0");
+    const digits1 = parseInt(params.get("digits1") || "0");
+    const digits2 = parseInt(params.get("digits2") || "0");
+    const numbers = parseInt(params.get("numbers") || "0");
+    const speed = parseFloat(params.get("speed") || "0");
+
+    const problemGen = new ProblemGenerator();
+    let problemSet!: ProblemSet;
+
+    // Generate Problem Set based on Arithmetic Type
+    switch (arithType) {
+      case ArithmeticType.AddSub: {
+        problemSet = problemGen.addSubtract(numbers, digits);
+        break;
       }
-
-      if (localStorage.getItem('correctCount') === null) {
-        localStorage.setItem('correctCount', '0');
+      case ArithmeticType.Multiplication: {
+        problemSet = problemGen.multiply(digits1, digits2);
+        break;
       }
-      if (localStorage.getItem('incorrectCount') === null) {
-        localStorage.setItem('incorrectCount', '0');
+      case ArithmeticType.Division: {
+        problemSet = problemGen.divide(digits1, digits2);
+        break;
       }
+    }
 
-      const savedTheme = localStorage.getItem("selectedTheme");
-      if (savedTheme) {
-        document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+    function updateAccuracy() {
+      const correctCount = parseInt(
+        localStorage.getItem("correctCount") || "0",
+        10,
+      );
+      const incorrectCount = parseInt(
+        localStorage.getItem("incorrectCount") || "0",
+        10,
+      );
+      const total = correctCount + incorrectCount;
+      const accuracy = total > 0 ? (correctCount / total) * 100 : 0;
+      if (accuracyBox) {
+        accuracyBox.textContent = `Accuracy: ${accuracy.toFixed(2)}%`;
       }
-
-      const accuracyBox = document.getElementById("accuracy-box");
-
-      const params = new URLSearchParams(window.location.search);
-      const arithType = parseInt(params.get('arithType') || '0');;    // Arithmetic Types: Add/Sub (0), Multiplication (1), Division (2)
-      const digits = parseInt(params.get('digits') || '0');
-      const digits1 = parseInt(params.get('digits1') || '0');
-      const digits2 = parseInt(params.get('digits2') || '0');
-      const numbers = parseInt(params.get('numbers') || '0');
-      const speed = parseFloat(params.get('speed') || '0');
-
-      const problemGen = new ProblemGenerator();
-      let problemSet!: ProblemSet;
-
-      // Generate Problem Set based on Arithmetic Type
-      switch(arithType) { 
-        case ArithmeticType.AddSub: { 
-          problemSet = problemGen.addSubtract(numbers, digits);
-          break; 
-        } 
-        case ArithmeticType.Multiplication: { 
-          problemSet = problemGen.multiply(digits1, digits2);          
-          break; 
-        }
-        case ArithmeticType.Division: { 
-          problemSet = problemGen.divide(digits1, digits2);          
-          break; 
-        }
-      };
-
-      function updateAccuracy() {
-        const correctCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
-        const incorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
-        const total = correctCount+incorrectCount;
-        const accuracy = total > 0 ? (correctCount / total) *100 : 0;
-        if (accuracyBox) {
-          accuracyBox.textContent = `Accuracy: ${accuracy.toFixed(2)}%`;
-        }
-      }
-
-      updateAccuracy();
-
-      function flashNumbers(numbersArr: number[], speedSeconds: number, arithType: number) {
-        const currentlyFlashing = document.getElementById('currentlyFlashing');
-        const flashContainer = document.getElementById('flashContainer');
-        const resultInput = document.getElementById('resultInput');
-        const backButton = document.getElementById('backButton');
-        const newProblem = document.getElementById('newProblem');
-
-        const submitButton = document.getElementById('submitButton');
-
-        if (!currentlyFlashing || !flashContainer || !resultInput || !backButton || !submitButton || !newProblem) return;
-
-        let index = 0;
-        const showTime = speedSeconds * 1000;
-
-        function showNextNumber() {
-          if (index >= numbersArr.length) {
-            
-            if (flashContainer) {
-              flashContainer.textContent = ''; 
-            }
-            if (currentlyFlashing) {
-            currentlyFlashing.style.visibility = 'hidden'; 
-            }
-            setTimeout(() => {
-              if (flashContainer) {
-               flashContainer.textContent = 'Answer'; 
-              }
-              if (resultInput){
-                resultInput.style.display = 'inline-block'; 
-              }
-              if (backButton) {
-                backButton.style.display = 'block'; 
-              }
-              if (newProblem) {
-                newProblem.style.display = 'block'; 
-              }
-              if (submitButton) {
-                submitButton.style.display = 'block';
-              }
-            }, 1000); 
-            return;
-          }
-
-          if (currentlyFlashing) {
-            currentlyFlashing.style.visibility = 'visible';
-          }
-
-          if (flashContainer) {
-            switch(arithType) {
-              case ArithmeticType.AddSub: {
-                flashContainer.textContent = numbersArr[index].toString();
-                break;
-              }
-              case ArithmeticType.Multiplication: {
-                flashContainer.textContent = numbersArr[index].toString() + " × " + numbersArr[++index].toString();
-                break;
-              }
-              case ArithmeticType.Division: {
-                flashContainer.textContent = numbersArr[index].toString() + " ÷ " + numbersArr[++index].toString();
-                break;
-              }
-            }
-          };
-          
-          index++;
-
-          setTimeout(() => {
-            if (flashContainer) {
-                flashContainer.textContent = '';
-            }
-            setTimeout(showNextNumber, showTime);
-          }, showTime);
-        }
-
-        showNextNumber();
-      }
-
-      flashNumbers(problemSet.entries, speed, arithType);
-
-      const backButton = document.getElementById('backButton');
-      if (backButton) {
-        backButton.style.display = 'none'; 
-      }
-      if (backButton) {
-        backButton.addEventListener('click', () => {
-          window.history.back(); 
-        });
-      }
-      const newProblem = document.getElementById('newProblem');
-      if (newProblem) {
-        newProblem.addEventListener('click', () => {
-          window.location.reload();
-        });
-      }
-      
-
-      function checkAnswer() {
-
-        const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
-        const resultInput = document.getElementById('resultInput') as HTMLInputElement;
-        const resultMessage = document.getElementById("resultMessage");
-        const previousProblem = document.getElementById('previousProblem');
-
-        if (resultInput && submitButton && resultMessage) {
-          const userInput = (resultInput as HTMLInputElement).value.trim();
-          const currentScore = getScore(); 
-
-          // disallow inputting for numbers after correct
-          resultInput.disabled = true;
-          submitButton.disabled = true;
-
-          const currentCorrectCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
-          const currentIncorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
-
-        if (userInput === problemSet.result.toString()) {
-    
-          updateScore(1);
-          resultMessage.textContent = "Correct!";
-          resultMessage.className = "correct";
-      
-        
-           localStorage.setItem('correctCount', (currentCorrectCount + 1).toString());
-        } else {
-      
-          if (currentScore > 0) {
-            updateScore(-1);
-          }
-      resultMessage.textContent = `Incorrect, the correct answer is: ${problemSet.result}`;
-      resultMessage.className = "incorrect";
-      
-   
-      localStorage.setItem('incorrectCount', (currentIncorrectCount + 1).toString());
     }
 
     updateAccuracy();
 
-          if (previousProblem) {
-            previousProblem.addEventListener('click', () => {
-              localStorage.setItem('previousEntries', JSON.stringify(problemSet.entries));
-              localStorage.setItem('previousResult', JSON.stringify(problemSet.result));
-              localStorage.setItem('previousArithmeticType', JSON.stringify(arithType));
-              
-              window.location.href = '/previous';
-            });
+    function flashNumbers(
+      numbersArr: number[],
+      speedSeconds: number,
+      arithType: number,
+    ) {
+      const currentlyFlashing = document.getElementById("currentlyFlashing")!;
+      const flashContainer = document.getElementById("flashContainer")!;
+      const resultInput = document.getElementById("resultInput")!;
+      const backButton = document.getElementById("backButton")!;
+      const newProblem = document.getElementById("newProblem")!;
+
+      const submitButton = document.getElementById("submitButton")!;
+
+      let index = 0;
+      const showTime = speedSeconds * 1000;
+
+      function showNextNumber() {
+        if (index >= numbersArr.length) {
+          if (flashContainer) {
+            flashContainer.textContent = "";
           }
-     
-          resultMessage.style.display = "block";
-          if (previousProblem) {
-            previousProblem.style.display = 'block'; 
+          if (currentlyFlashing) {
+            currentlyFlashing.style.visibility = "hidden";
+          }
+          setTimeout(() => {
+            if (flashContainer) {
+              flashContainer.textContent = "Answer";
+            }
+            if (resultInput) {
+              resultInput.style.display = "inline-block";
+            }
+            if (backButton) {
+              backButton.style.display = "block";
+            }
+            if (newProblem) {
+              newProblem.style.display = "block";
+            }
+            if (submitButton) {
+              submitButton.style.display = "block";
+            }
+          }, 1000);
+          return;
+        }
+
+        if (currentlyFlashing) {
+          currentlyFlashing.style.visibility = "visible";
+        }
+
+        if (flashContainer) {
+          switch (arithType) {
+            case ArithmeticType.AddSub: {
+              flashContainer.textContent = numbersArr[index].toString();
+              break;
+            }
+            case ArithmeticType.Multiplication: {
+              flashContainer.textContent =
+                numbersArr[index].toString() +
+                " × " +
+                numbersArr[++index].toString();
+              break;
+            }
+            case ArithmeticType.Division: {
+              flashContainer.textContent =
+                numbersArr[index].toString() +
+                " ÷ " +
+                numbersArr[++index].toString();
+              break;
+            }
           }
         }
-      }
 
-      const submitButton = document.getElementById('submitButton');
-      if (submitButton) {
-        submitButton.addEventListener('click', checkAnswer);
-      }
+        index++;
 
-      const resultInput = document.getElementById('resultInput');
-      if (resultInput) {
-        resultInput.addEventListener('keypress', (event) => {
-          if (event.key === 'Enter') {
-            checkAnswer();
+        setTimeout(() => {
+          if (flashContainer) {
+            flashContainer.textContent = "";
           }
-        });
+          setTimeout(showNextNumber, showTime);
+        }, showTime);
       }
-    });
+
+      showNextNumber();
+    }
+
+    flashNumbers(problemSet.entries, speed, arithType);
+
+    const backButton = document.getElementById("backButton");
+    if (backButton) {
+      backButton.style.display = "none";
+    }
+    if (backButton) {
+      backButton.addEventListener("click", () => {
+        window.history.back();
+      });
+    }
+    const newProblem = document.getElementById("newProblem");
+    if (newProblem) {
+      newProblem.addEventListener("click", () => {
+        window.location.reload();
+      });
+    }
+
+    function checkAnswer() {
+      const submitButton = document.getElementById(
+        "submitButton",
+      ) as HTMLButtonElement;
+      const resultInput = document.getElementById(
+        "resultInput",
+      ) as HTMLInputElement;
+      const resultMessage = document.getElementById("resultMessage");
+      const previousProblem = document.getElementById("previousProblem");
+
+      if (resultInput && submitButton && resultMessage) {
+        const userInput = (resultInput as HTMLInputElement).value.trim();
+
+        // disallow inputting for numbers after correct
+        resultInput.disabled = true;
+        submitButton.disabled = true;
+
+        const currentCorrectCount = parseInt(
+          localStorage.getItem("correctCount") || "0",
+          10,
+        );
+        const currentIncorrectCount = parseInt(
+          localStorage.getItem("incorrectCount") || "0",
+          10,
+        );
+
+        if (userInput === problemSet.result.toString()) {
+          updateScore(1);
+          resultMessage.textContent = "Correct!";
+          resultMessage.className = "correct";
+
+          localStorage.setItem(
+            "correctCount",
+            (currentCorrectCount + 1).toString(),
+          );
+        } else {
+          updateScore(-1);
+          resultMessage.textContent = `Incorrect, the correct answer is: ${problemSet.result}`;
+          resultMessage.className = "incorrect";
+
+          localStorage.setItem(
+            "incorrectCount",
+            (currentIncorrectCount + 1).toString(),
+          );
+        }
+
+        updateAccuracy();
+
+        if (previousProblem) {
+          previousProblem.addEventListener("click", () => {
+            localStorage.setItem(
+              "previousEntries",
+              JSON.stringify(problemSet.entries),
+            );
+            localStorage.setItem(
+              "previousResult",
+              JSON.stringify(problemSet.result),
+            );
+            localStorage.setItem(
+              "previousArithmeticType",
+              JSON.stringify(arithType),
+            );
+
+            window.location.href = "/previous";
+          });
+        }
+
+        resultMessage.style.display = "block";
+        if (previousProblem) {
+          previousProblem.style.display = "block";
+        }
+      }
+    }
+
+    const submitButton = document.getElementById("submitButton");
+    if (submitButton) {
+      submitButton.addEventListener("click", checkAnswer);
+    }
+
+    const resultInput = document.getElementById("resultInput");
+    if (resultInput) {
+      resultInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          checkAnswer();
+        }
+      });
+    }
   </script>
 </body>

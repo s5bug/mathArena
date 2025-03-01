@@ -1,6 +1,7 @@
 // https://docs.astro.build/en/guides/backend/google-firebase/#creating-auth-server-endpoints
 import type { ServiceAccount } from "firebase-admin";
 import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
 const activeApps = getApps();
 const serviceAccount = {
@@ -29,3 +30,4 @@ const initApp = () => {
 }
 
 export const app = activeApps.length === 0 ? initApp() : activeApps[0];
+export const db = getFirestore(app);
