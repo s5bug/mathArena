@@ -28,7 +28,7 @@ body {
   height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
-  background-image: url('/mathArenaBkg.jpg');
+  background-image: url('/background.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
