@@ -119,7 +119,7 @@ if (Astro.cookies.has("__session")) {
       const sideMenuContainer = document.getElementById("side-menu-container");
       const scoreBox = document.getElementById("score-box");
 
-      // Load saved theme from localStorage
+      // TODO: Load "defualt Blue" if user is not signed in, otherwise load in user's saved theme
       const savedTheme = localStorage.getItem("selectedTheme");
       if (savedTheme) {
         document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
