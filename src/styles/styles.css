@@ -255,3 +255,79 @@ body {
   margin-bottom: 1.5rem;
   text-align: left;
 }
+
+/* Leaderboard page */
+
+.leaderboard {
+  max-width: 600px;
+  width: 100%;
+  background: #f5f5ff;
+  border: 2px solid rgba(219, 202, 202, 0.712);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0;
+}
+
+.leaderboard h1 {
+ font-size: 2rem;
+ margin-bottom: 1rem;
+}
+
+.leaderboard-item {
+   display: flex;
+   align-items: center;
+   background: white;
+   margin: 10px 0;
+   padding: 15px;
+   border-radius: 12px;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+   animation: slideIn 0.5s ease forwards;
+   opacity: 0;
+}
+
+.leaderboard-item:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rank {
+   font-size: 1.5em;
+   font-weight: bold;
+   color: #2c3e50;
+   width: 40px;
+}
+
+.user-info {
+   flex-grow: 1;
+   text-align: left;
+}
+
+.username {
+   font-weight: 600;
+   color: #2c3e50;
+   margin: 0;
+}
+
+.score-info {
+   flex-grow: 1;
+   text-align: right;
+}
+
+.score {
+   font-weight: 600;
+   color: #2c3e50;
+   margin: 0;
+}
+
+@keyframes slideIn {
+   from {
+       opacity: 0;
+       transform: translateY(20px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}

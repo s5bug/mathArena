@@ -3,6 +3,7 @@ import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
+import { getHighScoreUsersServer } from "../lib/leaderboard_server.ts"
 
 const sessionTokenTTL =
     1000 * // s → ms
@@ -60,5 +61,10 @@ export const server = {
             const session = ctx.cookies.get("__session")!
             return await getScoreServer(session.value)
         }
-    })
+    }),
+    getHighScorePlayers: defineAction({
+        handler: async (_) => {
+            return await getHighScoreUsersServer();
+        }
+    }),
 }

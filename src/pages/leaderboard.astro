@@ -1,0 +1,50 @@
+---
+import Button from '../components/Button.astro';
+import '../styles/styles.css';
+---
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Math Arena</title>
+</head>
+
+
+<body>
+    <div class="leaderboard">
+        <h1>Leaderboard</h1>
+        <div class="content">
+            <!-- Leaderboard Items Added Here -->
+        </div>
+    </div>
+</body>
+
+<Button
+ id="backButton"
+ size="lg"
+ backgroundColor="#4ea7f5"
+ textColor="white"
+ borderColor="transparent"
+ href="/"
+>
+ Back
+</Button>
+
+
+<script>
+
+    import { renderLeaderboard } from "../lib/leaderboard_client";
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const savedTheme = localStorage.getItem("selectedTheme");
+        if (savedTheme) {
+            document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+        }
+
+    });
+
+    renderLeaderboard();
+
+</script>

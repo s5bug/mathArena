@@ -28,6 +28,7 @@ if (Astro.cookies.has("__session")) {
 <div id="side-menu">
     <div class="menu-option email-box" id="user-email">{userEmail}</div>
     <div class="menu-option progress-button">Progress</div>
+    <div class="menu-option leaderboard-button">Leaderboard</div>
     <div class="menu-option account-settings">Account Settings</div>
     <button id="logout-button" class="menu-option logout">Logout</button>
 </div>
@@ -63,6 +64,10 @@ if (Astro.cookies.has("__session")) {
         sideMenu.classList.remove("open");
         menuButton.classList.remove("hidden");
       }
+    });
+
+    sideMenu.querySelector(".leaderboard-button")!.addEventListener("click", () => {
+      window.location.href = "/leaderboard";
     });
 
     sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
@@ -181,6 +186,16 @@ if (Astro.cookies.has("__session")) {
 
     .progress-button:hover {
       background: #1d99db;
+    }
+
+    .leaderboard-button {
+      background: #1d99db;
+      color: white;
+    }
+
+    .leaderboard-button:hover {
+      background: #1d99db;
+      border: 2px solid gray;
     }
 
     .account-settings {
