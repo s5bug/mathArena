@@ -69,6 +69,10 @@ if (Astro.cookies.has("__session")) {
       window.location.href = "/settings";
     });
 
+    sideMenu.querySelector(".progress-button")!.addEventListener("click", () => {
+      window.location.href = "/progress";
+    });
+
     logoutButton?.addEventListener("click", async () => {
       try {
         await actions.logout({});
