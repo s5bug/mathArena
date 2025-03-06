@@ -1,6 +1,7 @@
 ---
 import Button from '../components/Button.astro';
 import '../styles/styles.css';
+import { generateTestData } from "../lib/datagen.ts";
 ---
 
 <div class="container">
@@ -37,6 +38,8 @@ import '../styles/styles.css';
 
 <script>
 
+import { generateTestData } from "../lib/datagen.ts";
+
 document.addEventListener("DOMContentLoaded", () => {
 
 
@@ -57,30 +60,24 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth();
   let selectedDay = today.getDate();
-  let pointsData: { [key: number]: number } = {};
+  let pointsData: { [key: number]: number } ={};
   let accuracyData: { [key: number]: number } = {};
 
-  function generateTestData(year: number, month: number) {//TESTING DATA TO latER REPLACE WITH ACTUAL USER DATA FOR POINTS AND ACCURACY
-    let daysInMonth = new Date(year, month + 1, 0).getDate();
-    pointsData = {};
-    accuracyData = {};
-    for (let day = 1; day <= daysInMonth; day++) {
-      pointsData[day] = Math.floor(Math.random() * 101); // random pts from 0 to 100
-      accuracyData[day] = Math.floor(Math.random() *(95 - 5 + 1))+ 5; // rando accuracies from 5 to 95%
-    }
-  }
+  const data = generateTestData(currentYear, currentMonth);
+  pointsData = data.pointsData;
+  accuracyData = data.accuracyData;
 
   function updateCalendar() {
     if (monthYearEl){
-  monthYearEl.textContent = `${months[currentMonth]} - ${currentYear}`;
+  monthYearEl.textContent = `${months[currentMonth]} -${currentYear}`;
     }
   if (calendarDaysEl) {
     calendarDaysEl.innerHTML = "";
   }
 
-  generateTestData(currentYear, currentMonth);
+  
 
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement("button");
     dayEl.classList.add("calendar-day");
@@ -133,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dayEl.style.borderRadius = "15px";
       dayEl.style.borderColor = "black";
       if (selectedDateEl) {
-        selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
+        selectedDateEl.textContent =`Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
       }
       updateStats(day);
     });
@@ -159,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (prevMonthBtn) {
     prevMonthBtn.addEventListener("click", () => {
-      currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      currentMonth = currentMonth === 0 ?11 : currentMonth - 1;
       if (currentMonth === 11) currentYear--;
       updateCalendar();
     });
