@@ -132,8 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       dayEl.style.color = "white";
       dayEl.style.borderRadius = "15px";
       dayEl.style.borderColor = "black";
-
-      selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
+      if (selectedDateEl) {
+        selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
+      }
       updateStats(day);
     });
     if (calendarDaysEl){
