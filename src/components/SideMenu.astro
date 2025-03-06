@@ -27,7 +27,7 @@ if (Astro.cookies.has("__session")) {
 
 <div id="side-menu">
     <div class="menu-option email-box" id="user-email">{userEmail}</div>
-    <div class="menu-option progress-button">Progress</div>
+    <a href="/progress" class="menu-option progress-button">Progress</a>
     <div class="menu-option account-settings">Account Settings</div>
     <button id="logout-button" class="menu-option logout">Logout</button>
 </div>
@@ -67,10 +67,6 @@ if (Astro.cookies.has("__session")) {
 
     sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
       window.location.href = "/settings";
-    });
-
-    sideMenu.querySelector(".progress-button")!.addEventListener("click", () => {
-      window.location.href = "/progress";
     });
 
     logoutButton?.addEventListener("click", async () => {
