@@ -57,10 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth();
   let selectedDay = today.getDate();
-  let pointsData = {};
-  let accuracyData = {};
+  let pointsData: { [key: number]: number } = {};
+  let accuracyData: { [key: number]: number } = {};
 
-  function generateTestData(year, month) {//TESTING DATA TO latER REPLACE WITH ACTUAL USER DATA FOR POINTS AND ACCURACY
+  function generateTestData(year: number, month: number) {//TESTING DATA TO latER REPLACE WITH ACTUAL USER DATA FOR POINTS AND ACCURACY
     let daysInMonth = new Date(year, month + 1, 0).getDate();
     pointsData = {};
     accuracyData = {};
@@ -71,8 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateCalendar() {
+    if (monthYearEl){
   monthYearEl.textContent = `${months[currentMonth]} - ${currentYear}`;
-  calendarDaysEl.innerHTML = "";
+    }
+  if (calendarDaysEl) {
+    calendarDaysEl.innerHTML = "";
+  }
 
   generateTestData(currentYear, currentMonth);
 
@@ -80,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement("button");
     dayEl.classList.add("calendar-day");
-    dayEl.textContent = day;
+    dayEl.textContent = day.toString();
 
     
     dayEl.style.backgroundColor = "white";
@@ -95,18 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
       dayEl.classList.add("selected");
       dayEl.style.backgroundColor = "#4ea7f5";
       dayEl.style.color = "white";
-      
-      selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
-      selectedDateEl.style.backgroundColor = "#95d2f5";
-      selectedDateEl.style.color = "white";
-      selectedDateEl.style.marginTop = "20px";
-      selectedDateEl.style.borderRadius = "20px";
-      selectedDateEl.style.height = "60px";
-      selectedDateEl.style.fontSize = "30px";
-      selectedDateEl.style.display = "flex";
-      selectedDateEl.style.alignItems = "center";
-      selectedDateEl.style.justifyContent = "center";
-      selectedDateEl.style.borderColor = "black";
+      if (selectedDateEl) {
+        selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
+        selectedDateEl.style.backgroundColor = "#95d2f5";
+        selectedDateEl.style.color = "white";
+        selectedDateEl.style.marginTop = "20px";
+        selectedDateEl.style.borderRadius = "20px";
+        selectedDateEl.style.height = "60px";
+        selectedDateEl.style.fontSize = "30px";
+        selectedDateEl.style.display = "flex";
+        selectedDateEl.style.alignItems = "center";
+        selectedDateEl.style.justifyContent = "center";
+        selectedDateEl.style.borderColor = "black";
+      }
       
       updateStats(day);
     }
@@ -114,11 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
     dayEl.addEventListener("click", () => {
       selectedDay = day;
       document.querySelectorAll(".calendar-day").forEach((el) => {
-        el.classList.remove("selected");
-        el.style.backgroundColor = "white";
-        el.style.color = "#4ea7f5";
-        el.style.borderRadius = "15px";
-        el.style.borderColor = "black";
+        const element = el as HTMLElement;
+        element.classList.remove("selected");
+        element.style.backgroundColor = "white";
+        element.style.color = "#4ea7f5";
+        element.style.borderRadius = "15px";
+        element.style.borderColor = "black";
       });
 
       dayEl.classList.add("selected");
@@ -130,34 +136,40 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedDateEl.textContent = `Selected Date: ${months[currentMonth]} ${day}, ${currentYear}`;
       updateStats(day);
     });
-
-    calendarDaysEl.appendChild(dayEl);
+    if (calendarDaysEl){
+      calendarDaysEl.appendChild(dayEl);
+    }
   }
 }
 
-  function updateStats(day) {
-    pointsDisplay.textContent = `Points: ${pointsData[day]}`;
-
+  function updateStats(day: number) {
+    if(pointsDisplay) {
+      pointsDisplay.textContent = `Points: ${pointsData[day]}`;
+    }
     let currentAccuracy = accuracyData[day];
     let previousAccuracy = accuracyData[day- 1] || currentAccuracy;
     let accuracyChange = currentAccuracy -previousAccuracy;
 
     let changeSymbol = accuracyChange > 0 ? "⬆" : accuracyChange < 0 ? "⬇" :"-";
     let changeColor = accuracyChange > 0 ? "green" : accuracyChange < 0 ? "red" : "#4ea7f5";
-    accuracyDisplay.innerHTML = `Accuracy: ${currentAccuracy}% <span id="accuracyChange" style="color: ${changeColor};">${changeSymbol} ${Math.abs(accuracyChange)} %</span> from previous day`;
+    if (accuracyDisplay) {
+      accuracyDisplay.innerHTML = `Accuracy: ${currentAccuracy}% <span id="accuracyChange" style="color: ${changeColor};">${changeSymbol} ${Math.abs(accuracyChange)} %</span> from previous day`;
+    }
   }
-
-  prevMonthBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    if (currentMonth === 11) currentYear--;
-    updateCalendar();
-  });
-
-  nextMonthBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    if (currentMonth === 0) currentYear++;
-    updateCalendar();
-  });
+  if (prevMonthBtn) {
+    prevMonthBtn.addEventListener("click", () => {
+      currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      if (currentMonth === 11) currentYear--;
+      updateCalendar();
+    });
+  }
+  if (nextMonthBtn) {
+    nextMonthBtn.addEventListener("click", () => {
+      currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+      if (currentMonth === 0) currentYear++;
+      updateCalendar();
+    });
+  }
 
   updateCalendar();
 });
