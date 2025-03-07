@@ -18,24 +18,17 @@ let userProgress = {
     accuracy: 0
 };
 
-// Debug log
-console.log("Session cookie present:", Astro.cookies.has("__session"));
-
 if (Astro.cookies.has("__session")) {
     const sessionCookie = Astro.cookies.get("__session")?.value;
-    console.log("Got session cookie:", sessionCookie ? "yes" : "no");
     
     if (sessionCookie) {
         try {
             const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-            console.log("Decoded user ID:", decodedCookie.uid);
             
             const userDoc = await db.collection("(default)").doc(decodedCookie.uid).get();
-            console.log("User document exists:", userDoc.exists);
             
             if (userDoc.exists) {
                 const userData = userDoc.data();
-                console.log("Raw user data from DB:", userData);
                 
                 userProgress = {
                     streak: userData?.currentStreak || 0,
@@ -57,11 +50,6 @@ if (Astro.cookies.has("__session")) {
                 }
 
                 unlockedAchievements = currentlyUnlocked;
-                
-                console.log("Processed user progress:", userProgress);
-                console.log("Loaded achievements:", unlockedAchievements);
-            } else {
-                console.log("No user document found");
             }
         } catch (error) {
             console.error("Error loading user data:", error);
@@ -98,7 +86,6 @@ if (Astro.cookies.has("__session")) {
             <div class="achievements-grid">
                 {Object.values(ACHIEVEMENTS).map((achievement) => {
                     const isUnlocked = unlockedAchievements.includes(achievement.id);
-                    console.log(`Achievement ${achievement.name}:`, { id: achievement.id, isUnlocked });
                     return (
                         <div class={`achievement ${isUnlocked ? 'unlocked' : 'locked'}`}>
                             <h3>{achievement.id}</h3>
