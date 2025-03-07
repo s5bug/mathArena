@@ -15,7 +15,7 @@ if (Astro.cookies.has("__session")) {
       const user = await auth.getUser(decodedCookie.uid);
       if (user) {
         //userEmail = decodedCookie.email;
-        userName = user.displayName || user.email || "Fail to retrieve user name";
+        userName = user.displayName || user.email || user.uid;
       }
     } catch (error) {
       console.error("Session verification failed:", error);
