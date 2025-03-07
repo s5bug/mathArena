@@ -4,6 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
 import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
+import { getAccuracyServer, updateAccuracyServer } from "../lib/Accuracy_server.ts";
 
 const sessionTokenTTL =
     1000 * // s → ms
@@ -73,6 +74,19 @@ export const server = {
         handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session")!
             return await getThemeServer(session.value)
+        }
+    }),
+    updateAccuracy: defineAction({
+        input: z.number(),
+        handler: async (newAccuracy, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await updateAccuracyServer(session.value, newAccuracy)
+        }
+    }),
+    getAccuracy: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getAccuracyServer(session.value)
         }
     })
 }

@@ -26,8 +26,7 @@ if (Astro.cookies.has("__session")) {
 
 <body>
   <ScoreBox server:defer />
-
-  <div id="accuracy-box">Accuracy: 0%</div>
+  <Accuracy server:defer />
 
   <div class="flash-container">
     <div id="currentlyFlashing" class="currently-flashing"></div>
@@ -88,6 +87,7 @@ if (Astro.cookies.has("__session")) {
     import { ProblemGenerator, ProblemSet } from "../lib/ProblemGenerator";
     import { ArithmeticType } from "../lib/enums";
     import { updateScore } from "../lib/score_client";
+    import { updateAccuracy } from "../lib/Accuracy_client";
 
     if (localStorage.getItem("correctCount") === null) {
       localStorage.setItem("correctCount", "0");
@@ -100,8 +100,6 @@ if (Astro.cookies.has("__session")) {
     if (savedTheme) {
       document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
     }
-
-    const accuracyBox = document.getElementById("accuracy-box");
 
     const params = new URLSearchParams(window.location.search);
     const arithType = parseInt(params.get("arithType") || "0"); // Arithmetic Types: Add/Sub (0), Multiplication (1), Division (2)
@@ -130,22 +128,10 @@ if (Astro.cookies.has("__session")) {
       }
     }
 
-    function updateAccuracy() {
-      const correctCount = parseInt(
-        localStorage.getItem("correctCount") || "0",
-        10,
-      );
-      const incorrectCount = parseInt(
-        localStorage.getItem("incorrectCount") || "0",
-        10,
-      );
-      const total = correctCount + incorrectCount;
-      const accuracy = total > 0 ? (correctCount / total) * 100 : 0;
-      if (accuracyBox) {
-        accuracyBox.textContent = `Accuracy: ${accuracy.toFixed(2)}%`;
-      }
-    }
-
+    // TODO: Find a way to update this to not just show 0% 
+    //       accuracy during flashing...Or come up with a
+    //       better solution -> show accuracy & score after
+    //       flashing is done?
     updateAccuracy();
 
     function flashNumbers(
