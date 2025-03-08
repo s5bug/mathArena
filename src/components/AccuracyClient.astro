@@ -28,6 +28,7 @@
 <script>
     import { getAccuracyLocalStorage } from "../lib/Accuracy_client.ts";
 
-    const AccuracyText = document.getElementById("Accuracy-text")!;
-    AccuracyText.innerText = getAccuracyLocalStorage().toString();
+    const AccuracyText = document.getElementById("accuracy-text")!;
+    const accuracyVal = getAccuracyLocalStorage();
+    AccuracyText.innerText = `${accuracyVal}%`;
 </script>

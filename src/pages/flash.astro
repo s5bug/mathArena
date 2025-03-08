@@ -128,12 +128,6 @@ if (Astro.cookies.has("__session")) {
       }
     }
 
-    // TODO: Find a way to update this to not just show 0% 
-    //       accuracy during flashing...Or come up with a
-    //       better solution -> show accuracy & score after
-    //       flashing is done?
-    updateAccuracy();
-
     function flashNumbers(
       numbersArr: number[],
       speedSeconds: number,
@@ -264,6 +258,7 @@ if (Astro.cookies.has("__session")) {
 
         if (userInput === problemSet.result.toString()) {
           updateScore(1);
+          updateAccuracy(1, 0);
           resultMessage.textContent = "Correct!";
           resultMessage.className = "correct";
 
@@ -273,6 +268,7 @@ if (Astro.cookies.has("__session")) {
           );
         } else {
           updateScore(-1);
+          updateAccuracy(0, 1);
           resultMessage.textContent = `Incorrect, the correct answer is: ${problemSet.result}`;
           resultMessage.className = "incorrect";
 
@@ -281,8 +277,6 @@ if (Astro.cookies.has("__session")) {
             (currentIncorrectCount + 1).toString(),
           );
         }
-
-        updateAccuracy();
 
         if (previousProblem) {
           previousProblem.addEventListener("click", () => {

@@ -4,51 +4,58 @@ export async function getAccuracy(): Promise<number> {
   const AccuracyBox = document.getElementById("accuracy-box")!;
   if (AccuracyBox.classList.contains("server")) return await getAccuracyFirebase();
   else if (AccuracyBox.classList.contains("client")) return getAccuracyLocalStorage();
-  else throw new Error("Score not loaded?");}
+  else throw new Error("Accuracy not loaded?");
+}
 
 export async function getAccuracyFirebase(): Promise<number> {
   const accuracy = await actions.getAccuracy();
-    return accuracy.data!;
+  return accuracy.data!;
 }
 
 export function getAccuracyLocalStorage(): number {
-    const correctCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
-    const incorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
+    const correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
+    const incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
     const totalAnswers = correctCount + incorrectCount;
     const accuracy = totalAnswers > 0 ? Math.round((correctCount / totalAnswers) * 100) : 0;
     return accuracy;
 }
 
-export async function updateAccuracy() {
+export async function updateAccuracy(correctChange: number, incorrectChange: number) {
   const AccuracyBox = document.getElementById("accuracy-box")!;
-  if (AccuracyBox.classList.contains("server")) return await updateAccuracyFirebase();
-  else if (AccuracyBox.classList.contains("client")) return updateAccuracyLocalStorage();
-  else throw new Error("Score not loaded?");
+  if (AccuracyBox.classList.contains("server")) return await updateAccuracyFirebase(correctChange, incorrectChange);
+  else if (AccuracyBox.classList.contains("client")) return updateAccuracyLocalStorage(correctChange, incorrectChange);
+  else throw new Error("Accuracy not loaded?");
 }
 
-// TODO: Fix this function; maybe it is wrong currently?
-function updateAccuracyText(): number {
+function updateAccuracyText(correctChange: number, incorrectChange: number): number {
   const AccuracyText = document.getElementById("accuracy-text")!;
 
-  const correctCount = parseInt(localStorage.getItem('correctCount') || '0', 10);
-  const incorrectCount = parseInt(localStorage.getItem('incorrectCount') || '0', 10);
-  const totalAnswers = correctCount + incorrectCount;
-  const newAccuracy = totalAnswers > 0 ? Math.round((correctCount / totalAnswers) * 100) : 0;
-  
-//   const currentAccuracy = Number(AccuracyText.innerText)
-//   let newAccuracy = currentAccuracy + change
-//   if(newAccuracy < 0) newAccuracy = 0;
+  let correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
+  let incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
 
-  AccuracyText.innerText = newAccuracy.toString();
+  correctCount += correctChange;
+  incorrectCount += incorrectChange;
+
+  localStorage.setItem("correctCount", correctCount.toString());
+  localStorage.setItem("incorrectCount", incorrectCount.toString());
+
+  const total = correctCount + incorrectCount;
+  const newAccuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  AccuracyText.innerText = `${newAccuracy}%`;
   return newAccuracy;
 }
 
-export async function updateAccuracyFirebase(): Promise<void> {
-  const newAccuracy = updateAccuracyText();
-  await actions.updateAccuracy(newAccuracy)
+export async function updateAccuracyFirebase(correctChange: number, incorrectChange: number): Promise<void> {
+  const newAccuracy = updateAccuracyText(correctChange, incorrectChange);
+
+  const correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
+  const incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
+
+  await actions.updateAccuracy({ newAccuracy, correctCount, incorrectCount });
 }
 
-export function updateAccuracyLocalStorage(): void {
-  const newAccuracy = updateAccuracyText();
+export function updateAccuracyLocalStorage(correctChange: number, incorrectChange: number): void {
+  const newAccuracy = updateAccuracyText(correctChange, incorrectChange);
   localStorage.setItem("userAccuracy", newAccuracy.toString());
 }
