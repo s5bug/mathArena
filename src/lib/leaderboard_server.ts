@@ -4,29 +4,42 @@ import { type User } from "../lib/interface.ts"
 
 export async function getHighScoreUsersServer(): Promise<User[]> {
     
-    const TopFiveUsers = 5;
+    // Customize how many users can be displayed
+    const NumberOfUsers = 5;
+    const HighScoreUsers: User[] = [];
 
-    const snapshot = await db.collection('(default)').orderBy("score", "desc").limit(TopFiveUsers).get();
-    const uid_array =  snapshot.docs.map(doc => doc.id);
-    const score_array =  snapshot.docs.map(doc => doc.get("score"));
+    // Retrieve Users' UID and Scores from Firestore
+    const snapshot = await db.collection('(default)').orderBy("score", "desc").limit(NumberOfUsers).get();
+    const uid_score_array =  snapshot.docs.map(doc => ({ uid: doc.id, score: doc.get("score")}));
 
-    let TopFiveUsersList: User[] = [];
+    for (let user of uid_score_array) {
+        
+        try {
 
-    for (let user in uid_array) {
-        const displayName = await getDisplayNameServer(uid_array[user]);
-        const score = score_array[user];
-        const TopUser: User = {displayName: displayName, score: score};
-        TopFiveUsersList.push(TopUser);
+            const displayName = await getDisplayNameByUIDServer(user.uid);
+            const score = user.score;
+
+            const TopUser: User = {displayName: displayName, score: score};
+            HighScoreUsers.push(TopUser);
+
+        } catch {}
+
     }
 
-    return TopFiveUsersList;
+    return HighScoreUsers
 }
 
-async function getDisplayNameServer(uid: string): Promise<string> {
+async function getDisplayNameByUIDServer(uid: string): Promise<string> {
 
     const auth = getAuth(app);
-    const userRecord = auth.getUser(uid);
-    const displayName = (await userRecord).displayName || "Unknown";
+    
+    try {
 
-    return displayName;
+        const userRecord = auth.getUser(uid);
+        return (await userRecord).displayName || "Unknown-User"
+
+    } catch{}
+
+    throw new Error("User Does Not Exist");
+
 }

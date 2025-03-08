@@ -1,8 +1,8 @@
 ---
 import Button from '../components/Button.astro';
 import '../styles/styles.css';
+import Leaderboards from '../components/Leaderboards.astro';
 ---
-
 
 <head>
     <meta charset="UTF-8">
@@ -10,15 +10,9 @@ import '../styles/styles.css';
     <title>Leaderboard - Math Arena</title>
 </head>
 
-
-<body>
-    <div class="leaderboard">
-        <h1>Leaderboard</h1>
-        <div class="content">
-            <!-- Leaderboard Items Added Here -->
-        </div>
-    </div>
-</body>
+<Leaderboards server:defer>
+    <Leaderboards slot="fallback" />
+</Leaderboards>
 
 <Button
  id="backButton"
@@ -34,17 +28,12 @@ import '../styles/styles.css';
 
 <script>
 
-    import { renderLeaderboard } from "../lib/leaderboard_client";
+document.addEventListener('DOMContentLoaded', () => {
 
-    document.addEventListener('DOMContentLoaded', () => {
+const savedTheme = localStorage.getItem("selectedTheme");
+if (savedTheme) {
+    document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+}
 
-        const savedTheme = localStorage.getItem("selectedTheme");
-        if (savedTheme) {
-            document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
-        }
-
-    });
-
-    renderLeaderboard();
-
+});
 </script>

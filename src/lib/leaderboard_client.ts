@@ -2,8 +2,8 @@ import { actions } from "astro:actions";
 import { type User } from "./interface";
 
 async function getHighScoreUsersFirebase(): Promise<User[]> {
-    const TopFiveUsersList = await actions.getHighScorePlayers();
-    return TopFiveUsersList.data!;
+    const TopHighScoreUsers = await actions.getHighScorePlayers();
+    return TopHighScoreUsers.data!;
 }
 
 function createLeaderboardItem(user: User, index: number) {
@@ -29,9 +29,9 @@ export function renderLeaderboard() {
     const content = document.querySelector('.content') as HTMLElement;
     content.innerHTML = '';
 
-    getHighScoreUsersFirebase().then((TopFiveUsersList) => {
-        for (let index = 0; index < TopFiveUsersList.length; index++) {
-            const item = createLeaderboardItem(TopFiveUsersList[index], index);
+    getHighScoreUsersFirebase().then((TopHighScoreUsers) => {
+        for (let index = 0; index < TopHighScoreUsers.length; index++) {
+            const item = createLeaderboardItem(TopHighScoreUsers[index], index);
             content.appendChild(item);
         }
     })
