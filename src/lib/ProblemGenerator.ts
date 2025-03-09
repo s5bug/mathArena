@@ -65,10 +65,14 @@ export class ProblemGenerator {
   
       let divisor = this.generateNumber(digits2, false);
       if (divisor === 0) divisor = 1;
+
+      let quotientLowerBoundIncl = Math.ceil(Math.pow(10, digits1) / (10 * divisor));
+      let quotientUpperBoundExcl = Math.ceil((Math.pow(10, digits1) / divisor) - 1) + 1;
   
-      let dividend = divisor * this.generateNumber(digits1, false);
+      let quotient = Math.floor((Math.random() * (quotientUpperBoundExcl - quotientLowerBoundIncl)) + quotientLowerBoundIncl);
+      let dividend = quotient * divisor;
   
-      return new ProblemSet([dividend, divisor], dividend / divisor);
+      return new ProblemSet([dividend, divisor], quotient);
     }
   }
   
