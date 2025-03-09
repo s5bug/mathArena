@@ -1,6 +1,3 @@
-import type { User } from "firebase/auth";
-import { getAuth } from "firebase/auth";
-import { app } from "./firebase_client.ts";
 import { actions } from "astro:actions";
 
 export async function getScore(): Promise<number> {
@@ -18,14 +15,14 @@ export function getScoreLocalStorage(): number {
   return parseInt(localStorage.getItem("userScore") || "0", 10);
 }
 
-
-export async function updateScore(change: number) {
+export async function updateScore(change: -1 | 1) {
   const scoreBox = document.getElementById("score-box")!;
   if(scoreBox.classList.contains("server")) return await updateScoreFirebase(change);
   else if(scoreBox.classList.contains("client")) return updateScoreLocalStorage(change);
   else throw new Error("Score not loaded?");
 }
-function updateScoreText(change: number): number {
+
+function updateScoreText(change: -1 | 1): number {
   const scoreText = document.getElementById("score-text")!;
   
   const currentScore = Number(scoreText.innerText)
@@ -36,13 +33,17 @@ function updateScoreText(change: number): number {
   return newScore;
 }
 
-export async function updateScoreFirebase(change: number): Promise<void> {
-  const newScore = updateScoreText(change);
-  await actions.updateScore(newScore)
+export async function updateScoreFirebase(change: -1 | 1): Promise<void> {
+  updateScoreText(change);
+  switch(change) {
+    case -1:
+      await actions.incrementIncorrect();
+    case 1:
+      await actions.incrementCorrect();
+  }
 }
 
-
-export function updateScoreLocalStorage(change: number): void {
+export function updateScoreLocalStorage(change: -1 | 1): void {
   const newScore = updateScoreText(change);
   localStorage.setItem("userScore", newScore.toString());
 }

@@ -1,4 +1,4 @@
-import { db, app } from "../lib/firebase_server.ts";
+import { db, app } from "./firebase_server.ts";
 import { getAuth } from "firebase-admin/auth";
 
 export async function getAccuracyServer(session: string): Promise<number> {

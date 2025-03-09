@@ -22,9 +22,8 @@ export function getAccuracyLocalStorage(): number {
 
 export async function updateAccuracy(correctChange: number, incorrectChange: number) {
   const AccuracyBox = document.getElementById("accuracy-box")!;
-  if (AccuracyBox.classList.contains("server")) return await updateAccuracyFirebase(correctChange, incorrectChange);
-  else if (AccuracyBox.classList.contains("client")) return updateAccuracyLocalStorage(correctChange, incorrectChange);
-  else throw new Error("Accuracy not loaded?");
+  if (AccuracyBox.classList.contains("client")) return updateAccuracyLocalStorage(correctChange, incorrectChange);
+  else updateAccuracyText(correctChange, incorrectChange);
 }
 
 function updateAccuracyText(correctChange: number, incorrectChange: number): number {
@@ -44,15 +43,6 @@ function updateAccuracyText(correctChange: number, incorrectChange: number): num
 
   AccuracyText.innerText = `${newAccuracy}%`;
   return newAccuracy;
-}
-
-export async function updateAccuracyFirebase(correctChange: number, incorrectChange: number): Promise<void> {
-  const newAccuracy = updateAccuracyText(correctChange, incorrectChange);
-
-  const correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
-  const incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
-
-  await actions.updateAccuracy({ newAccuracy, correctCount, incorrectCount });
 }
 
 export function updateAccuracyLocalStorage(correctChange: number, incorrectChange: number): void {

@@ -255,3 +255,7 @@ body {
   margin-bottom: 1.5rem;
   text-align: left;
 }
+
+.stats-box h2 {
+  color: #4ea7f5;
+}

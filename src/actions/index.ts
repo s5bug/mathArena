@@ -2,9 +2,11 @@ import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
-import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
+import { incrementCorrectServer, incrementIncorrectServer, getScoreServer } from "../lib/score_server.ts";
 import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
-import { getAccuracyServer, updateAccuracyServer, getCorrectServer, getIncorrectServer } from "../lib/Accuracy_server.ts";
+import { getAccuracyServer, updateAccuracyServer, getCorrectServer, getIncorrectServer } from "../lib/accuracy_server.ts";
+import { UserStats } from "../lib/achievements.ts";
+import { db } from "../lib/firebase_server.ts"; // Should not need this here...Riksean's code
 
 const sessionTokenTTL =
     1000 * // s → ms
@@ -50,13 +52,6 @@ export const server = {
             ctx.cookies.delete("__session", { path: "/" });
         }
     }),
-    updateScore: defineAction({
-        input: z.number(),
-        handler: async (newScore, ctx) => {
-            const session = ctx.cookies.get("__session")!
-            return await updateScoreServer(session.value, newScore)
-        }
-    }),
     getScore: defineAction({
         handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session")!
@@ -76,15 +71,16 @@ export const server = {
             return await getThemeServer(session.value)
         }
     }),
-    updateAccuracy: defineAction({
-        input: z.object({
-            newAccuracy: z.number(),
-            correctCount: z.number(),
-            incorrectCount: z.number()
-        }),
-        handler: async ({newAccuracy, correctCount, incorrectCount}, ctx) => {
+    incrementCorrect: defineAction({
+        handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session")!
-            return await updateAccuracyServer(session.value, newAccuracy, correctCount, incorrectCount)
+            return await incrementCorrectServer(session.value) // TODO: implement incrementCorrectServer()
+        }
+    }),
+    incrementIncorrect: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await incrementIncorrectServer(session.value) // TODO: implement incrementIncorrectServer()
         }
     }),
     getAccuracy: defineAction({
