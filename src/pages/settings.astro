@@ -8,34 +8,9 @@ import { app } from "../lib/firebase_server.ts";
 import { actions } from "astro:actions";
 import Button from '../components/Button.astro';
 import BackgroundTheme from '../components/BackgroundTheme.astro';
-
-/*
-let userEmail = "[Display User Email]";
-
-if (Astro.cookies.has("__session")) {
-  const sessionCookie = Astro.cookies.get("__session")?.value;
-  if (sessionCookie) {
-    try {
-      const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-      if (decodedCookie.email) {
-        userEmail = decodedCookie.email;
-      }
-    } catch (error) {
-      console.error("Session verification failed:", error);
-    }
-  }
-}
-*/
-
 ---
 
 <div class="settings-container">
-  <div class="settings-form">
-    <label for="email-input">Email Address:</label>
-    <button class="submit-button" id="reset-password-button">Reset Password</button>
-    <p id="reset-message" class="hidden"></p>
-  </div>
-
   <BackgroundTheme server:defer />
 </div>
 
@@ -80,16 +55,6 @@ if (Astro.cookies.has("__session")) {
     background-color: #1d99db;
   }
 
-  .hidden {
-    display: none;
-  }
-  .success {
-    color: blue;
-  }
-
-  .error {
-    color: black;
-  }
 </style>
 
 <script>
@@ -98,35 +63,6 @@ import '../styles/styles.css';
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "../lib/firebase_client.ts";
 import { actions } from "astro:actions";
-
-  const auth = getAuth(app); 
-
-  const resetButton = document.getElementById("reset-password-button");
-
-if (resetButton) {
-
-  resetButton.addEventListener("click", async () => {
-
-    const resetMessage = document.getElementById("reset-message");
-
-    sendPasswordResetEmail(auth, ) // EMAIL GOES HERE IN 2nd PARAMTER, NOW SHOULD FEED CURRENT USER LOGGED IN EMAIL
-      .then(() => {
-        if (resetMessage) {
-          resetMessage.textContent = "Reset email has been sent, please check your inbox.";
-          resetMessage.className = "success";
-          resetMessage.classList.remove("hidden");
-        }
-      })
-      .catch((error) => {
-        console.error("Error during password reset: ", error);
-          if(resetMessage) {
-          resetMessage.textContent = "Unable to send reset email.";
-          resetMessage.className = "error";
-          resetMessage.classList.remove("hidden");
-        }
-      });
-  });
-}
 
   const savedTheme = localStorage.getItem("selectedTheme");
   if (savedTheme) {
