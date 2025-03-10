@@ -83,7 +83,10 @@ import { actions } from "astro:actions";
 
   const auth = getAuth(app); 
 
-  document.getElementById("reset-password-button").addEventListener("click", async () => {
+  const resetButton = document.getElementById("reset-password-button");
+if (resetButton) {
+
+  resetButton.addEventListener("click", async () => {
     const email = (document.getElementById("email-input") as HTMLInputElement).value;
 
     const resetMessage = document.getElementById("reset-message");
@@ -112,6 +115,7 @@ import { actions } from "astro:actions";
         }
       });
   });
+}
 
   const savedTheme = localStorage.getItem("selectedTheme");
   if (savedTheme) {
