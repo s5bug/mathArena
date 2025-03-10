@@ -2,7 +2,8 @@
 export const prerender = false;
 
 import '../styles/styles.css';
-import { getAuth, sendPasswordResetEmail } from "firebase-admin/auth";
+import { getAuth } from "firebase-admin/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { app } from "../lib/firebase_server.ts";
 import { actions } from "astro:actions";
 import Button from '../components/Button.astro';
@@ -83,11 +84,11 @@ import { actions } from "astro:actions";
   const auth = getAuth(app); 
 
   document.getElementById("reset-password-button").addEventListener("click", async () => {
-    const email = document.getElementById("email-input").value;
+    const email = (document.getElementById("email-input") as HTMLInputElement).value;
 
     const resetMessage = document.getElementById("reset-message");
 
-    if (!email) {
+    if (!email & resetMessage) {
       resetMessage.textContent = "Please enter a valid email address.";
       resetMessage.className = "error";
       resetMessage.classList.remove("hidden");
@@ -96,15 +97,19 @@ import { actions } from "astro:actions";
 
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        resetMessage.textContent = "Reset email has been sent, please check your inbox.";
-        resetMessage.className = "success";
-        resetMessage.classList.remove("hidden");
+        if (resetMessage) {
+          resetMessage.textContent = "Reset email has been sent, please check your inbox.";
+          resetMessage.className = "success";
+          resetMessage.classList.remove("hidden");
+        }
       })
       .catch((error) => {
         console.error("Error during password reset: ", error);
-        resetMessage.textContent = "Unable to send reset email.";
-        resetMessage.className = "error";
-        resetMessage.classList.remove("hidden");
+          if(resetMessage) {
+          resetMessage.textContent = "Unable to send reset email.";
+          resetMessage.className = "error";
+          resetMessage.classList.remove("hidden");
+        }
       });
   });
 
@@ -112,5 +117,5 @@ import { actions } from "astro:actions";
   if (savedTheme) {
     document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
   }
-  
+
 </script>
