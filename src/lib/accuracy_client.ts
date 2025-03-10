@@ -13,8 +13,8 @@ export async function getAccuracyFirebase(): Promise<number> {
 }
 
 export function getAccuracyLocalStorage(): number {
-    const correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
-    const incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
+    const correctCount = parseInt(localStorage.getItem("totalCorrect") || "0", 10);
+    const incorrectCount = parseInt(localStorage.getItem("totalIncorrect") || "0", 10);
     const totalAnswers = correctCount + incorrectCount;
     const accuracy = totalAnswers > 0 ? Math.round((correctCount / totalAnswers) * 100) : 0;
     return accuracy;
@@ -29,14 +29,14 @@ export async function updateAccuracy(correctChange: number, incorrectChange: num
 function updateAccuracyText(correctChange: number, incorrectChange: number): number {
   const AccuracyText = document.getElementById("accuracy-text")!;
 
-  let correctCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
-  let incorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
+  let correctCount = parseInt(localStorage.getItem("totalCorrect") || "0", 10);
+  let incorrectCount = parseInt(localStorage.getItem("totalIncorrect") || "0", 10);
 
   correctCount += correctChange;
   incorrectCount += incorrectChange;
 
-  localStorage.setItem("correctCount", correctCount.toString());
-  localStorage.setItem("incorrectCount", incorrectCount.toString());
+  localStorage.setItem("totalCorrect", correctCount.toString());
+  localStorage.setItem("totalIncorrect", incorrectCount.toString());
 
   const total = correctCount + incorrectCount;
   const newAccuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;

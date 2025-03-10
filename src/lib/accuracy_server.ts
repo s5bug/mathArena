@@ -24,7 +24,7 @@ export async function getCorrectServer(session: string): Promise<number> {
         if (decodedCookie.uid) {
             const user_doc = await db.collection("(default)").doc(decodedCookie.uid).get();
             if (!user_doc.exists) return 0;
-            else return user_doc.get("correctCount") || 0;
+            else return user_doc.get("totalCorrect") || 0;
         }
     } catch {}
     throw new Error("Unauthorized");
@@ -38,7 +38,7 @@ export async function getIncorrectServer(session: string): Promise<number> {
         if (decodedCookie.uid) {
             const user_doc = await db.collection("(default)").doc(decodedCookie.uid).get();
             if (!user_doc.exists) return 0;
-            else return user_doc.get("incorrectCount") || 0;
+            else return user_doc.get("totalIncorrect") || 0;
         }
     }
     catch {}

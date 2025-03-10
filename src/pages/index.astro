@@ -52,24 +52,6 @@ if (Astro.cookies.has("__session")) {
       #side-menu-container.hidden {
         display: none;
       }
-      .achievements-container {
-        position: fixed;
-        bottom: 200px;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-      }
-      .achievements-container :global(.button-base) {
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-      }
-      .achievements-container :global(.button-base:hover) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-      }
       #title {
         text-align: center;
         margin: 20px 0;
@@ -131,22 +113,9 @@ if (Astro.cookies.has("__session")) {
       </Button>
     </div>
 
-    <div class="achievements-container">
-      <Button
-        size="lg"
-        backgroundColor="#f5a742"
-        textColor="white"
-        borderColor="transparent"
-        href="/achievements"
-      >
-        🏆 Achievements
-      </Button>
-    </div>
-
     <ScoreBox server:defer />
 
     <script>
-      // TODO: Load "defualt Blue" if user is not signed in, otherwise load in user's saved theme
       const savedTheme = localStorage.getItem("selectedTheme");
       if (savedTheme) {
         document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;

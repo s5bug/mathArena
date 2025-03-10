@@ -1,4 +1,5 @@
 import { actions } from "astro:actions";
+import { UserStats } from "./achievements.ts"
 
 export async function getScore(): Promise<number> {
   const scoreBox = document.getElementById("score-box")!;
@@ -35,11 +36,23 @@ function updateScoreText(change: -1 | 1): number {
 
 export async function updateScoreFirebase(change: -1 | 1): Promise<void> {
   updateScoreText(change);
+  let newData: Partial<UserStats>;
   switch(change) {
     case -1:
-      await actions.incrementIncorrect();
+      newData = (await actions.incrementIncorrect()).data!;
+      break;
     case 1:
-      await actions.incrementCorrect();
+      newData = (await actions.incrementCorrect()).data!;
+      break;
+  }
+
+  let stat: keyof UserStats;
+
+  for (stat in newData) {
+    // key: stat, val: newData[stat]
+    if (newData[stat]) {
+      localStorage.setItem(stat, newData[stat]!.toString());
+    }
   }
 }
 

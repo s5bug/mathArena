@@ -74,13 +74,13 @@ export const server = {
     incrementCorrect: defineAction({
         handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session")!
-            return await incrementCorrectServer(session.value) // TODO: implement incrementCorrectServer()
+            return await incrementCorrectServer(session.value)
         }
     }),
     incrementIncorrect: defineAction({
         handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session")!
-            return await incrementIncorrectServer(session.value) // TODO: implement incrementIncorrectServer()
+            return await incrementIncorrectServer(session.value)
         }
     }),
     getAccuracy: defineAction({

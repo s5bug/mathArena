@@ -7,7 +7,6 @@ import Accuracy from "../components/Accuracy.astro";
 import ScoreBox from "../components/ScoreBox.astro";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
-import { updateStats } from "../lib/achievements_client";
 
 let loggedIn = false;
 const auth = getAuth(app);
@@ -90,11 +89,11 @@ if (Astro.cookies.has("__session")) {
     import { updateScore } from "../lib/score_client";
     import { updateAccuracy } from "../lib/accuracy_client";
 
-    if (localStorage.getItem("correctCount") === null) {
-      localStorage.setItem("correctCount", "0");
+    if (localStorage.getItem("totalCorrect") === null) {
+      localStorage.setItem("totalCorrect", "0");
     }
-    if (localStorage.getItem("incorrectCount") === null) {
-      localStorage.setItem("incorrectCount", "0");
+    if (localStorage.getItem("totalIncorrect") === null) {
+      localStorage.setItem("totalIncorrect", "0");
     }
 
     const savedTheme = localStorage.getItem("selectedTheme");
@@ -250,8 +249,8 @@ if (Astro.cookies.has("__session")) {
         resultInput.disabled = true;
         submitButton.disabled = true;
 
-        const currentCorrectCount = parseInt(localStorage.getItem("correctCount") || "0", 10);
-        const currentIncorrectCount = parseInt(localStorage.getItem("incorrectCount") || "0", 10);
+        const currentCorrectCount = parseInt(localStorage.getItem("totalCorrect") || "0", 10);
+        const currentIncorrectCount = parseInt(localStorage.getItem("totalIncorrect") || "0", 10);
         const totalAnswers = currentCorrectCount + currentIncorrectCount;
         const accuracy = totalAnswers > 0 ? (currentCorrectCount / totalAnswers) * 100 : 0;
 
@@ -262,17 +261,11 @@ if (Astro.cookies.has("__session")) {
           resultMessage.textContent = "Correct!";
           resultMessage.className = "correct";
 
-          const score = parseInt(localStorage.getItem("score") || "0");
-
-          localStorage.setItem("correctCount", (currentCorrectCount + 1).toString());
         } else {
           updateScore(-1);
           updateAccuracy(0, 1);
           resultMessage.textContent = `Incorrect, the correct answer is: ${problemSet.result}`;
           resultMessage.className = "incorrect";
-          localStorage.setItem("incorrectCount", (currentIncorrectCount + 1).toString());
-
-          const score = parseInt(localStorage.getItem("score") || "0");
         }
 
         if (previousProblem) {
