@@ -2,8 +2,6 @@
 export const prerender = false;
 
 import '../styles/styles.css';
-import { getAuth } from "firebase-admin/auth";
-import { sendPasswordResetEmail } from "firebase/auth";
 import { app } from "../lib/firebase_server.ts";
 import { actions } from "astro:actions";
 import Button from '../components/Button.astro';
@@ -28,7 +26,6 @@ import BackgroundTheme from '../components/BackgroundTheme.astro';
 <script>
   
 import '../styles/styles.css';
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "../lib/firebase_client.ts";
 import { actions } from "astro:actions";
 
