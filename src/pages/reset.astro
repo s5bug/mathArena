@@ -1,6 +1,4 @@
 ---
-export const prerender = false;
-
 import '../styles/styles.css';
 import { getAuth } from "firebase-admin/auth";
 import { sendPasswordResetEmail } from "firebase/auth";
@@ -79,46 +77,36 @@ import BackgroundTheme from '../components/BackgroundTheme.astro';
     }
   </style>
 <script>
-  
-import '../styles/styles.css';
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { app } from "../lib/firebase_client.ts";
-import { actions } from "astro:actions";
+  import '../styles/styles.css';
+  import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+  import { app } from "../lib/firebase_client.ts";
+  import { actions } from "astro:actions";
 
   const auth = getAuth(app); 
 
-  const resetButton = document.getElementById("reset-password-button");
-if (resetButton) {
+  const resetButton = document.getElementById("reset-password-button")!;
 
-  resetButton.addEventListener("click", async () => {
-    const email = (document.getElementById("email-input") as HTMLInputElement).value;
+  
+    resetButton.addEventListener("click", async () => {
+      const email = (document.getElementById("email-input")! as HTMLInputElement).value;
+      const resetMessage = document.getElementById("reset-message");
 
-    const resetMessage = document.getElementById("reset-message");
 
-    if (!email && resetMessage) {
-      resetMessage.textContent = "Please enter a valid email address.";
-      resetMessage.className = "error";
-      resetMessage.classList.remove("hidden");
-    return;
-    }
-
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
+      try {
+        await sendPasswordResetEmail(auth, email);
         if (resetMessage) {
           resetMessage.textContent = "Reset email has been sent, please check your inbox.";
           resetMessage.className = "success";
           resetMessage.classList.remove("hidden");
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error during password reset: ", error);
-          if(resetMessage) {
+        if (resetMessage) {
           resetMessage.textContent = "Unable to send reset email.";
           resetMessage.className = "error";
           resetMessage.classList.remove("hidden");
         }
-      });
-  });
-}
-
+      }
+    });
+  
 </script>
