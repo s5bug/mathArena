@@ -233,7 +233,7 @@ if (Astro.cookies.has("__session")) {
     let currentStreak = parseInt(localStorage.getItem("currentStreak") || "0");
 
     function updateStreak(newStreak: number) {
-      currentStreak = newStreak;
+      currentStreak = newStreak + 1;
       localStorage.setItem("currentStreak", currentStreak.toString());
     }
 

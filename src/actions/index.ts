@@ -4,9 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { incrementCorrectServer, incrementIncorrectServer, getScoreServer } from "../lib/score_server.ts";
 import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
-import { getAccuracyServer, updateAccuracyServer, getCorrectServer, getIncorrectServer } from "../lib/accuracy_server.ts";
-import { UserStats } from "../lib/achievements.ts";
-import { db } from "../lib/firebase_server.ts"; // Should not need this here...Riksean's code
+import { getAccuracyServer, getCorrectServer, getIncorrectServer } from "../lib/accuracy_server.ts";
 
 const sessionTokenTTL =
     1000 * // s → ms

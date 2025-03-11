@@ -30,20 +30,20 @@ export async function incrementCorrectServer(session: string): Promise<Partial<U
             let currentCorrectCount = 0;
             let currentIncorrectCount = 0;
             let currentScore = 0;
-            let streak = 1;
+            let streak = 0;
             let currentAchievements = [];
 
             if (user_doc.exists) {
                 currentCorrectCount = user_doc.get("totalCorrect") || 0;
                 currentIncorrectCount = user_doc.get("totalIncorrect") || 0;
                 currentScore = user_doc.get("score") || 0;
-                streak = user_doc.get("streak") || 1;
+                streak = user_doc.get("streak") || 0;
                 currentAchievements = user_doc.get("achievements") || [];
             }
             const result: Partial<UserStats> & { totalCorrect: number } = {
                 totalCorrect: currentCorrectCount + 1,
                 score: currentScore + 1,
-                streak: streak,
+                streak: streak + 1
             };
 
             result.accuracy = Math.round((result.totalCorrect / (result.totalCorrect + currentIncorrectCount)) * 100);
