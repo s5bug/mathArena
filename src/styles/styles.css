@@ -144,7 +144,7 @@ body {
 .input-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 4rem;
   margin-bottom: 2rem;
 }
 
