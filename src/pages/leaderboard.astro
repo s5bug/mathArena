@@ -2,6 +2,7 @@
 import Button from '../components/Button.astro';
 import '../styles/styles.css';
 import Leaderboards from '../components/Leaderboards.astro';
+
 ---
 
 <head>
@@ -9,10 +10,6 @@ import Leaderboards from '../components/Leaderboards.astro';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard - Math Arena</title>
 </head>
-
-<Leaderboards server:defer>
-    <Leaderboards slot="fallback" />
-</Leaderboards>
 
 <Button
  id="backButton"
@@ -25,15 +22,14 @@ import Leaderboards from '../components/Leaderboards.astro';
  Back
 </Button>
 
+<Leaderboards server:defer/>
 
 <script>
 
-document.addEventListener('DOMContentLoaded', () => {
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+        document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
+    }
 
-const savedTheme = localStorage.getItem("selectedTheme");
-if (savedTheme) {
-    document.body.style.backgroundImage = `url('/background.svg?color=${savedTheme.slice(1)}')`;
-}
-
-});
 </script>

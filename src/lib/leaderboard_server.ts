@@ -1,6 +1,6 @@
 import { db, app } from "../lib/firebase_server.ts";
 import { getAuth } from 'firebase-admin/auth';
-import { type User } from "../lib/interface.ts"
+import { type User } from "./LeaderboardUsers"
 
 export async function getHighScoreUsersServer(): Promise<User[]> {
     

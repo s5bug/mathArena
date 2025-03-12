@@ -1,5 +1,5 @@
 import { actions } from "astro:actions";
-import { type User } from "./interface";
+import { type User } from "./LeaderboardUsers";
 
 async function getHighScoreUsersFirebase(): Promise<User[]> {
     const TopHighScoreUsers = await actions.getHighScorePlayers();
