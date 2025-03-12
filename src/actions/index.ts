@@ -2,9 +2,10 @@ import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
-import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
-import { getHighScoreUsersServer } from "../lib/leaderboard_server.ts"
-import { updateThemeServer, getThemeServer } from "../lib/background_server.ts";
+import { incrementCorrectServer, incrementIncorrectServer, getScoreServer } from "../lib/score_server.ts";
+import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
+import { getAccuracyServer, getCorrectServer, getIncorrectServer } from "../lib/accuracy_server.ts";
+import { getHighScoreUsersServer } from "../lib/leaderboard_server.ts";
 
 const sessionTokenTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -52,15 +53,6 @@ export const server = {
             ctx.cookies.delete("__session", { path: "/" });
         }
     }),
-    updateScore: defineAction({
-        input: z.number(),
-        handler: async (newScore, ctx) => {
-            const session = ctx.cookies.get("__session");
-            if (!session) throw new Error("Unauthorized");
-
-            return await updateScoreServer(session.value, newScore);
-        }
-    }),
     getScore: defineAction({
         handler: async (_, ctx) => {
             const session = ctx.cookies.get("__session");
@@ -89,6 +81,36 @@ export const server = {
             if (!session) throw new Error("Unauthorized");
 
             return await getThemeServer(session.value);
+        }
+    }),
+    incrementCorrect: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await incrementCorrectServer(session.value)
+        }
+    }),
+    incrementIncorrect: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await incrementIncorrectServer(session.value)
+        }
+    }),
+    getAccuracy: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getAccuracyServer(session.value)
+        }
+    }),
+    getCorrect: defineAction({
+        handler: async(_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getCorrectServer(session.value)
+        }
+    }),
+    getIncorrect: defineAction({
+        handler: async(_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getIncorrectServer(session.value)
         }
     })
 };
