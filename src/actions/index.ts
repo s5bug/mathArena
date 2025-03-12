@@ -3,6 +3,7 @@ import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
+import { getHighScoreUsersServer } from "../lib/leaderboard_server.ts"
 import { updateThemeServer, getThemeServer } from "../lib/background_server.ts";
 
 const sessionTokenTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -66,6 +67,11 @@ export const server = {
             if (!session) throw new Error("Unauthorized");
 
             return await getScoreServer(session.value);
+        }
+    }),
+    getHighScorePlayers: defineAction({
+        handler: async (_) => {
+            return await getHighScoreUsersServer();
         }
     }),
     updateTheme: defineAction({
