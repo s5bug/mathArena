@@ -3,14 +3,9 @@ import { z } from "astro:schema";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
-import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
+import { updateThemeServer, getThemeServer } from "../lib/background_server.ts";
 
-const sessionTokenTTL =
-    1000 * // s → ms
-    60 * // m → s
-    60 * // h → m
-    24 * // d → h
-    7; // 7 days
+const sessionTokenTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 export const server = {
     register: defineAction({
@@ -23,9 +18,9 @@ export const server = {
         handler: async ({ email, password, name }) => {
             const auth = getAuth(app);
             return await auth.createUser({
-                    email,
-                    password,
-                    displayName: name,
+                email,
+                password,
+                displayName: name,
             });
         }
     }),
@@ -35,13 +30,20 @@ export const server = {
         }),
         handler: async ({ idToken }, ctx) => {
             const auth = getAuth(app);
-            await auth.verifyIdToken(idToken);
-
-            const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn: sessionTokenTTL })
-
-            ctx.cookies.set("__session", sessionCookie, { path: "/" });
-
-            return sessionCookie
+            
+            try {
+                const decodedToken = await auth.verifyIdToken(idToken);
+                const user = await auth.getUser(decodedToken.uid);
+                if (!user.emailVerified) {
+                    throw new Error("Email is not verified. Please verify your email before logging in.");
+                }
+                const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn: sessionTokenTTL });
+                ctx.cookies.set("__session", sessionCookie, { path: "/", httpOnly: true, secure: true, sameSite: "strict" });
+                return sessionCookie;
+            } catch (error) {
+                console.error("Login failed:", error);
+                throw new Error("Authentication failed. Please try again.");
+            }
         }
     }),
     logout: defineAction({
@@ -52,27 +54,35 @@ export const server = {
     updateScore: defineAction({
         input: z.number(),
         handler: async (newScore, ctx) => {
-            const session = ctx.cookies.get("__session")!
-            return await updateScoreServer(session.value, newScore)
+            const session = ctx.cookies.get("__session");
+            if (!session) throw new Error("Unauthorized");
+
+            return await updateScoreServer(session.value, newScore);
         }
     }),
     getScore: defineAction({
         handler: async (_, ctx) => {
-            const session = ctx.cookies.get("__session")!
-            return await getScoreServer(session.value)
+            const session = ctx.cookies.get("__session");
+            if (!session) throw new Error("Unauthorized");
+
+            return await getScoreServer(session.value);
         }
     }),
     updateTheme: defineAction({
         input: z.string(),
         handler: async (newTheme, ctx) => {
-            const session = ctx.cookies.get("__session")!
-            return await updateThemeServer(session.value, newTheme)
+            const session = ctx.cookies.get("__session");
+            if (!session) throw new Error("Unauthorized");
+
+            return await updateThemeServer(session.value, newTheme);
         }
     }),
     getTheme: defineAction({
         handler: async (_, ctx) => {
-            const session = ctx.cookies.get("__session")!
-            return await getThemeServer(session.value)
+            const session = ctx.cookies.get("__session");
+            if (!session) throw new Error("Unauthorized");
+
+            return await getThemeServer(session.value);
         }
     })
-}
+};
