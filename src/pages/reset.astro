@@ -89,22 +89,22 @@ import BackgroundTheme from '../components/BackgroundTheme.astro';
   
     resetButton.addEventListener("click", async () => {
       const email = (document.getElementById("email-input") as HTMLInputElement).value;
-      const resetMessage = document.getElementById("reset-message");
+      const resetMessage = document.getElementById("reset-message")!;
 
 
       try {
         await sendPasswordResetEmail(auth, email);
        
-          resetMessage!.textContent = "Reset email has been sent, please check your inbox.";
-          resetMessage!.className = "success";
-          resetMessage!.classList.remove("hidden");
+          resetMessage.textContent = "Reset email has been sent, please check your inbox.";
+          resetMessage.className = "success";
+          resetMessage.classList.remove("hidden");
         
       } catch (error) {
         console.error("Error during password reset: ", error);
         
-         resetMessage!.textContent = "Unable to send reset email.";
-        resetMessage!.className = "error";
-        resetMessage!.classList.remove("hidden");
+         resetMessage.textContent = "Unable to send reset email.";
+        resetMessage.className = "error";
+        resetMessage.classList.remove("hidden");
       
       }
     });
