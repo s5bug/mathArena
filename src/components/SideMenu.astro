@@ -27,14 +27,14 @@ if (Astro.cookies.has("__session")) {
 
 <div id="side-menu">
     <div class="menu-option email-box" id="user-email">{userEmail}</div>
-    <div class="menu-option progress-button">Progress</div>
-    <div class="menu-option leaderboard-button">Leaderboard</div>
-    <div class="menu-option account-settings">Account Settings</div>
+    <a href="/leaderboard" class="menu-option leaderboard-button">Leaderboard</a>
+    <a href="/progress" class="menu-option progress-button">Progress</a>
+    <a href="/settings" class="menu-option account-settings">Account Settings</a>
     <button id="logout-button" class="menu-option logout">Logout</button>
 </div>
 
 <script>
-  // import { actions } from 'astro:actions';
+  
   import { actions } from 'astro:actions';
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("menu-button");
@@ -64,14 +64,6 @@ if (Astro.cookies.has("__session")) {
         sideMenu.classList.remove("open");
         menuButton.classList.remove("hidden");
       }
-    });
-
-    sideMenu.querySelector(".leaderboard-button")!.addEventListener("click", () => {
-      window.location.href = "/leaderboard";
-    });
-
-    sideMenu.querySelector(".account-settings")!.addEventListener("click", () => {
-      window.location.href = "/settings";
     });
 
     logoutButton?.addEventListener("click", async () => {

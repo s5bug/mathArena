@@ -315,3 +315,9 @@ body {
       transform: translateY(0);
   }
 }
+
+/* Stats */
+
+.stats-box h2 {
+  color: #4ea7f5;
+}

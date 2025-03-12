@@ -4,6 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 import { app } from "../lib/firebase_server.ts";
 import { updateScoreServer, getScoreServer } from "../lib/score_server.ts";
 import { getHighScoreUsersServer } from "../lib/leaderboard_server.ts"
+import { updateThemeServer, getThemeServer} from "../lib/background_server.ts";
 
 const sessionTokenTTL =
     1000 * // s → ms
@@ -67,4 +68,17 @@ export const server = {
             return await getHighScoreUsersServer();
         }
     }),
+    updateTheme: defineAction({
+        input: z.string(),
+        handler: async (newTheme, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await updateThemeServer(session.value, newTheme)
+        }
+    }),
+    getTheme: defineAction({
+        handler: async (_, ctx) => {
+            const session = ctx.cookies.get("__session")!
+            return await getThemeServer(session.value)
+        }
+    })
 }
