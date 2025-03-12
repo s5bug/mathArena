@@ -29,7 +29,9 @@ if (Astro.cookies.has("__session")) {
 </button>
 
 <div id="side-menu">
+
     <div class="menu-option email-box" id="user-email">{userName}</div>
+    <a href="/leaderboard" class="menu-option leaderboard-button">Leaderboard</a>
     <a href="/progress" class="menu-option progress-button">Progress</a>
     <a href="/settings" class="menu-option account-settings">Account Settings</a>
     <a href="/achievements" class="menu-option achievements">Achievements</a>
@@ -68,7 +70,6 @@ if (Astro.cookies.has("__session")) {
         menuButton.classList.remove("hidden");
       }
     });
-
 
     logoutButton?.addEventListener("click", async () => {
       try {
@@ -182,6 +183,16 @@ if (Astro.cookies.has("__session")) {
 
     .progress-button:hover {
       background: #1d99db;
+    }
+
+    .leaderboard-button {
+      background: #1d99db;
+      color: white;
+    }
+
+    .leaderboard-button:hover {
+      background: #1d99db;
+      border: 2px solid gray;
     }
 
     .account-settings {

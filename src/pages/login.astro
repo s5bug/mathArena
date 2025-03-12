@@ -6,7 +6,6 @@ import { getAuth } from "firebase-admin/auth";
 import {app} from "../lib/firebase_server.ts";
 import {actions} from "astro:actions";
 
-/* Check if the user is authenticated */
 const auth = getAuth(app);
 if (Astro.cookies.has("__session")) {
   const sessionCookie = Astro.cookies.get("__session")?.value;
@@ -46,6 +45,8 @@ if (Astro.cookies.has("__session")) {
  
     <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     <a href="/"> Continue without an account </a>
+    <p><a href="/reset">Forgot your password? Click here to reset</a></p>
+  
   </div>
 
   <script>
